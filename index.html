@@ -5,17 +5,26 @@
 <title>NEXTRICH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
+*{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff}
-header{text-align:center;padding:15px;background:#111}
+header{text-align:center;padding:14px;background:#0f1430}
+h2,h3,h4{margin:8px 0}
 .hidden{display:none}
-input,button{padding:10px;margin:5px;border-radius:8px;border:none}
-button{background:#ffd700;color:#000;font-weight:bold}
-.card{background:#151a2e;padding:15px;margin:10px;border-radius:12px}
-.bottom{position:fixed;bottom:0;left:0;right:0;display:flex;background:#111}
+input,textarea,button{padding:10px;margin:6px 0;border-radius:10px;border:none;width:100%}
+textarea{resize:none}
+button{background:#ffd700;color:#000;font-weight:bold;cursor:pointer}
+button.secondary{background:#2a2f55;color:#fff}
+.card{background:#151a2e;padding:14px;margin:10px;border-radius:14px}
+.badge{display:inline-block;padding:4px 8px;border-radius:8px;background:#2a2f55}
+.bottom{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0f1430}
 .bottom button{flex:1;margin:0;border-radius:0}
-.snow{position:fixed;top:-10px;color:white;animation:fall linear infinite}
+.spacer{height:70px}
+.snow{position:fixed;top:-10px;color:white;animation:fall linear infinite;pointer-events:none}
 @keyframes fall{to{transform:translateY(110vh)}}
-.santa{position:fixed;right:10px;bottom:70px;font-size:50px}
+.santa{position:fixed;right:10px;bottom:80px;font-size:52px;pointer-events:none}
+.small{opacity:.8;font-size:13px}
+hr{border:0;border-top:1px solid #2a2f55;margin:10px 0}
+a{color:#7fd1ff}
 </style>
 </head>
 <body>
@@ -23,99 +32,258 @@ button{background:#ffd700;color:#000;font-weight:bold}
 <header><h2>🎄 NEXTRICH 🎄</h2></header>
 
 <div id="auth" class="card">
-<h3>Вход / Регистрация</h3>
-<input id="login" placeholder="Логин">
-<input id="pass" type="password" placeholder="Пароль">
-<button onclick="login()">Войти</button>
+  <h3>Вход / Регистрация</h3>
+  <input id="login" placeholder="Логин">
+  <input id="pass" type="password" placeholder="Пароль">
+  <button onclick="doLogin()">Войти</button>
+  <div class="small">Если логина нет — он будет создан</div>
 </div>
 
 <div id="app" class="hidden">
-<div id="home" class="card"></div>
-<div id="elite" class="card hidden"></div>
-<div id="tasks" class="card hidden"></div>
-<div id="me" class="card hidden"></div>
+  <div id="home" class="card"></div>
+  <div id="elite" class="card hidden"></div>
+  <div id="tasks" class="card hidden"></div>
+  <div id="me" class="card hidden"></div>
+  <div id="support" class="card hidden"></div>
+  <div class="spacer"></div>
 
-<div class="bottom">
-<button onclick="show('home')">Дом</button>
-<button onclick="show('elite')">ELITE</button>
-<button onclick="show('tasks')">Задачи</button>
-<button onclick="show('me')">Мне</button>
-</div>
+  <div class="bottom">
+    <button onclick="show('home')">Дом</button>
+    <button onclick="show('elite')">ELITE</button>
+    <button onclick="show('tasks')">Задачи</button>
+    <button onclick="show('me')">Мне</button>
+    <button onclick="show('support')">Support</button>
+  </div>
 </div>
 
 <div class="santa">🎅💰</div>
 
 <script>
-let users=JSON.parse(localStorage.users||'{}');
-let current=null;
+/* ===== STORAGE ===== */
+let users = JSON.parse(localStorage.users || '{}');
+let withdrawals = JSON.parse(localStorage.withdrawals || '[]');
+let current = null;
 
-function login(){
- let l=login.value,p=pass.value;
- if(!users[l]) users[l]={pass:p,balance:0,elite:0,tasks:[]};
- if(users[l].pass!==p) return alert("Неверно");
- current=l; localStorage.users=JSON.stringify(users);
- auth.classList.add('hidden'); app.classList.remove('hidden');
- render();
+/* ===== AUTH ===== */
+function doLogin(){
+  const l = login.value.trim();
+  const p = pass.value.trim();
+  if(!l || !p) return alert('Введите логин и пароль');
+  if(!users[l]) users[l] = {pass:p,balance:0,elite:0,tasks:[],support:[]};
+  if(users[l].pass !== p) return alert('Неверный пароль');
+  current = l;
+  localStorage.users = JSON.stringify(users);
+  auth.classList.add('hidden');
+  app.classList.remove('hidden');
+  render();
 }
 
+/* ===== NAV ===== */
 function show(id){
- ['home','elite','tasks','me'].forEach(x=>document.getElementById(x).classList.add('hidden'));
- document.getElementById(id).classList.remove('hidden');
+  ['home','elite','tasks','me','support'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
 }
 
+/* ===== RENDER ===== */
 function render(){
- home.innerHTML=`<h3>Добро пожаловать, ${current}</h3>
- <p>Баланс: ${users[current].balance} USDT</p>`;
- elite.innerHTML='';
- const eliteData=[
- [1,10,3],[2,50,16],[3,200,68],[4,600,216],[5,1200,480],
- [6,2400,1104],[7,4800,2496],[8,9600,5760],[9,19200,13440],[10,38400,32640]
- ];
- eliteData.forEach(e=>{
- elite.innerHTML+=`<div class="card">
- <b>ELITE ${e[0]}</b><br>
- Депозит ${e[1]} USDT<br>
- Доход ${e[2]} USDT/день<br>
- <button onclick="pay(${e[1]},${e[0]})">Активировать</button>
- </div>`;
- });
- tasks.innerHTML='<h3>Задания</h3>';
- users[current].tasks.forEach(t=>tasks.innerHTML+=`<div>${t}</div>`);
- me.innerHTML=`<h3>Мой кабинет</h3>
- Баланс: ${users[current].balance}<br>
- ${current==='admin1'?adminPanel():''}`;
+  const u = users[current];
+
+  /* HOME */
+  home.innerHTML = `
+    <h3>Добро пожаловать, ${current}</h3>
+    <div class="badge">Баланс: ${u.balance} USDT</div>
+    <p class="small">Пополнение — на адреса ниже. Вывод — по заявке.</p>
+  `;
+
+  /* ELITE */
+  const eliteData = [
+    [1,10,3],[2,50,16],[3,200,68],[4,600,216],[5,1200,480],
+    [6,2400,1104],[7,4800,2496],[8,9600,5760],[9,19200,13440],[10,38400,32640]
+  ];
+  elite.innerHTML = '<h3>ELITE уровни</h3>';
+  eliteData.forEach(e=>{
+    elite.innerHTML += `
+      <div class="card">
+        <b>ELITE ${e[0]}</b><br>
+        Депозит: ${e[1]} USDT<br>
+        Доход: ${e[2]} USDT / день<br>
+        <button onclick="activateElite(${e[1]},${e[0]})">Активировать</button>
+      </div>
+    `;
+  });
+
+  /* TASKS */
+  tasks.innerHTML = '<h3>Задачи</h3>';
+  if(u.tasks.length === 0){
+    tasks.innerHTML += '<div class="small">Пока нет задач</div>';
+  } else {
+    u.tasks.forEach((t,i)=>{
+      tasks.innerHTML += `
+        <div class="card">
+          <b>Задача ${i+1}</b><br>
+          <a href="${t}" target="_blank">${t}</a><br>
+          <button class="secondary" onclick="completeTask(${i})">Отметить выполненной</button>
+        </div>
+      `;
+    });
+  }
+
+  /* ME */
+  let meHTML = `
+    <h3>Мой кабинет</h3>
+    <div class="badge">Баланс: ${u.balance} USDT</div>
+    <hr>
+  `;
+  if(current === 'admin1'){
+    meHTML += `
+      <h4>Админка</h4>
+      <input id="admUser" placeholder="Логин пользователя">
+      <input id="admBal" placeholder="Баланс (число)">
+      <button onclick="setBalance()">Изменить баланс</button>
+      <hr>
+      <input id="admTask" placeholder="YouTube ссылка">
+      <button onclick="addTask()">Добавить задание всем</button>
+      <hr>
+      <h4>Заявки на вывод</h4>
+      ${renderWithdrawals()}
+    `;
+  } else {
+    meHTML += `
+      <div class="small">Вывод средств — по подтверждению администратора.</div>
+      <hr>
+      <h4>Запрос на вывод</h4>
+      <input id="wSum" placeholder="Сумма USDT">
+      <input id="wAddr" placeholder="Адрес (Polygon / TRC20 / ERC20 / LTC)">
+      <button onclick="requestWithdraw()">Запросить вывод</button>
+    `;
+  }
+  me.innerHTML = meHTML;
+
+  /* SUPPORT */
+  let sHTML = '<h3>Support</h3>';
+  if(current === 'admin1'){
+    sHTML += '<h4>Обращения пользователей</h4>';
+    let any=false;
+    for(const name in users){
+      (users[name].support||[]).forEach(msg=>{
+        any=true;
+        sHTML += `<div class="card"><b>${name}:</b><br>${msg}</div>`;
+      });
+    }
+    if(!any) sHTML += '<div class="small">Обращений нет</div>';
+  } else {
+    sHTML += `
+      <textarea id="supmsg" placeholder="Опишите проблему"></textarea>
+      <button onclick="sendSupport()">Отправить</button>
+    `;
+  }
+  support.innerHTML = sHTML;
 }
 
-function pay(sum,elite){
- alert(`Оплатите ${sum} USDT\n\nPolygon / ERC20:\n0x386a41769648b8daca0c63271dc533ea787d67ba\n\nTRC20:\nTRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu\n\nLTC:\nLf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1`);
+/* ===== ACTIONS ===== */
+function activateElite(sum,level){
+  alert(
+`Оплатите ${sum} USDT
+
+Polygon / ERC20:
+0x386a41769648b8daca0c63271dc533ea787d67ba
+
+TRC20:
+TRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu
+
+LTC:
+Lf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1
+
+После оплаты напишите в Support: "Оплатил ELITE ${level}".`
+  );
 }
 
-function adminPanel(){
- let html='<h4>Админка</h4>';
- html+='<input id="u" placeholder="Логин"><input id="b" placeholder="Баланс"><button onclick="setBal()">Изменить баланс</button>';
- html+='<input id="task" placeholder="YouTube ссылка"><button onclick="addTask()">Добавить задание</button>';
- return html;
-}
-
-function setBal(){
- users[u.value].balance=+b.value;
- localStorage.users=JSON.stringify(users);
- alert('Готово');
+function setBalance(){
+  const name = admUser.value.trim();
+  const bal = Number(admBal.value);
+  if(!users[name]) return alert('Пользователь не найден');
+  users[name].balance = bal;
+  localStorage.users = JSON.stringify(users);
+  alert('Баланс обновлён');
+  render();
 }
 
 function addTask(){
- for(let k in users) users[k].tasks.push(task.value);
- localStorage.users=JSON.stringify(users);
- alert('Задание добавлено');
+  const link = admTask.value.trim();
+  if(!link) return alert('Введите ссылку');
+  for(const k in users){
+    users[k].tasks.push(link);
+  }
+  localStorage.users = JSON.stringify(users);
+  alert('Задание добавлено всем');
+  render();
 }
 
+function completeTask(i){
+  users[current].tasks.splice(i,1);
+  users[current].balance += 1; // награда за задачу (пример)
+  localStorage.users = JSON.stringify(users);
+  render();
+}
+
+/* ===== WITHDRAW ===== */
+function requestWithdraw(){
+  const sum = Number(wSum.value);
+  const addr = wAddr.value.trim();
+  if(sum<=0 || !addr) return alert("Введите сумму и адрес");
+  if(users[current].balance < sum) return alert("Недостаточно средств");
+  withdrawals.push({user:current,sum,addr,time:new Date().toLocaleString(),done:false});
+  localStorage.withdrawals = JSON.stringify(withdrawals);
+  alert("Заявка на вывод отправлена");
+  wSum.value=''; wAddr.value='';
+}
+
+function renderWithdrawals(){
+  let html = '';
+  withdrawals.forEach((w,i)=>{
+    if(!w.done){
+      html += `
+        <div class="card">
+          <b>${w.user}</b><br>
+          Сумма: ${w.sum} USDT<br>
+          Адрес: ${w.addr}<br>
+          <button onclick="approveWithdraw(${i})">Подтвердить</button>
+        </div>
+      `;
+    }
+  });
+  return html || '<div class="small">Заявок нет</div>';
+}
+
+function approveWithdraw(i){
+  const w = withdrawals[i];
+  if(users[w.user].balance < w.sum) return alert("Ошибка баланса");
+  users[w.user].balance -= w.sum;
+  w.done = true;
+  localStorage.users = JSON.stringify(users);
+  localStorage.withdrawals = JSON.stringify(withdrawals);
+  alert("Вывод подтверждён");
+  render();
+}
+
+/* ===== SUPPORT ===== */
+function sendSupport(){
+  const msg = supmsg.value.trim();
+  if(!msg) return alert('Введите сообщение');
+  users[current].support.push(msg);
+  localStorage.users = JSON.stringify(users);
+  alert('Сообщение отправлено');
+  supmsg.value='';
+}
+
+/* ===== SNOW ===== */
 for(let i=0;i<40;i++){
- let s=document.createElement('div');
- s.className='snow';
- s.style.left=Math.random()*100+'%';
- s.style.animationDuration=5+Math.random()*5+'s';
- s.innerHTML='❄';
- document.body.appendChild(s);
+  const s=document.createElement('div');
+  s.className='snow';
+  s.style.left=Math.random()*100+'%';
+  s.style.animationDuration=(5+Math.random()*6)+'s';
+  s.innerHTML='❄';
+  document.body.appendChild(s);
 }
 </script>
 </body>
