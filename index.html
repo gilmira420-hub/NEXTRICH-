@@ -3,41 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <title>NEXTRICH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{font-family:Arial;background:#111;color:#fff;margin:0}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(180deg,#0b0f1a,#111);
+  color:#fff;
+  padding-bottom:70px;
+  overflow-x:hidden;
+}
 .page{display:none;padding:15px}
 .page.active{display:block}
-input,button{width:100%;padding:10px;margin:5px 0}
-button{background:#00c853;border:none;color:#000;font-weight:bold}
-.card{background:#1c1c1c;padding:15px;margin:10px 0;border-radius:8px}
-nav{display:flex;justify-content:space-around;background:#000;padding:10px}
-nav button{width:auto;background:#222;color:#fff}
-.admin{border:2px solid #ff9800}
+h2,h3{text-align:center}
+
+input,button,select{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border-radius:8px;
+  border:none;
+  font-size:15px;
+}
+input,select{background:#222;color:#fff}
+button{
+  background:linear-gradient(90deg,#00ff9c,#00c853);
+  color:#000;
+  font-weight:bold;
+}
+
+.card{
+  background:#1a1f2e;
+  padding:15px;
+  border-radius:12px;
+  margin:10px 0;
+  box-shadow:0 0 15px rgba(0,255,156,.15);
+}
+
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;height:60px;
+  background:#0b0f1a;display:flex;justify-content:space-around;align-items:center;
+  border-top:1px solid #222;z-index:5
+}
+.bottom-nav button{background:none;color:#fff;font-size:12px}
+
+.banner{
+  background:linear-gradient(135deg,#ff0000,#b71c1c);
+  border-radius:16px;padding:15px;text-align:center;margin-bottom:15px
+}
+.banner span{font-size:40px;display:block}
+.admin{border:2px solid gold}
+a{color:#00ff9c}
+
+/* ❄️ Snow */
+.snowflake{
+  position:fixed;top:-10px;color:#fff;user-select:none;pointer-events:none;
+  animation:fall linear infinite;z-index:1
+}
+@keyframes fall{
+  to{transform:translateY(110vh)}
+}
 </style>
 </head>
+
 <body>
 
 <!-- AUTH -->
 <div id="auth" class="page active">
-  <h2>NEXTRICH</h2>
+  <h2>🎄 NEXTRICH 🎄</h2>
+  <div class="banner"><span>🎅💰</span><b>Новогодний доход в USDT</b></div>
   <input id="login" placeholder="Логин">
   <input id="pass" type="password" placeholder="Пароль">
   <button onclick="loginUser()">Войти / Регистрация</button>
 </div>
 
-<!-- NAV -->
-<nav id="nav" style="display:none">
-  <button onclick="show('home')">Дом</button>
-  <button onclick="show('elite')">ELITE</button>
-  <button onclick="show('tasks')">Задачи</button>
-  <button onclick="show('team')">Команда</button>
-  <button onclick="show('me')">Мне</button>
-</nav>
-
 <!-- HOME -->
 <div id="home" class="page">
-  <h3>Добро пожаловать</h3>
-  <p>Ваш баланс: <b id="bal">0</b> USDT</p>
+  <div class="banner"><span>🎅💰</span><b>С Новым Годом!</b></div>
+  <div class="card">Баланс: <b id="bal">0</b> USDT</div>
 </div>
 
 <!-- ELITE -->
@@ -45,128 +89,193 @@ nav button{width:auto;background:#222;color:#fff}
 
 <!-- TASKS -->
 <div id="tasks" class="page">
-  <h3>Задания</h3>
+  <h3>🎯 Задания</h3>
   <div id="taskList"></div>
 </div>
 
 <!-- TEAM -->
 <div id="team" class="page">
-  <h3>Команда</h3>
-  <p>Ваша ссылка:</p>
-  <input id="ref" readonly>
+  <h3>👥 Команда</h3>
+  <div class="card">
+    Ваша ссылка:
+    <input id="ref" readonly>
+  </div>
 </div>
 
 <!-- ME -->
 <div id="me" class="page">
-  <h3>Кабинет</h3>
-  <p>Баланс: <b id="bal2">0</b> USDT</p>
+  <h3>👤 Кабинет</h3>
+  <div class="card">
+    Баланс: <b id="bal2">0</b> USDT
+  </div>
+
+  <div class="card">
+    <b>Вывод средств</b>
+    <input id="wdAmount" type="number" placeholder="Сумма">
+    <select id="wdNet">
+      <option>USDT TRC20</option>
+      <option>USDT ERC20</option>
+      <option>USDT POLYGON</option>
+      <option>LTC</option>
+    </select>
+    <input id="wdAddr" placeholder="Адрес кошелька">
+    <button onclick="withdraw()">Отправить заявку</button>
+  </div>
 </div>
 
 <!-- ADMIN -->
 <div id="admin" class="page admin">
-  <h3>АДМИН-КАБИНЕТ</h3>
+  <h3>👑 Админ-панель</h3>
 
-  <h4>Изменить баланс</h4>
-  <input id="abUser" placeholder="Логин">
-  <input id="abSum" type="number" placeholder="Баланс">
-  <button onclick="setBalance()">Установить</button>
+  <div class="card">
+    <b>Изменить баланс</b>
+    <input id="abUser" placeholder="Логин">
+    <input id="abSum" type="number" placeholder="Баланс">
+    <button onclick="setBalance()">Установить</button>
+  </div>
 
-  <h4>Добавить задание</h4>
-  <input id="tTitle" placeholder="Название">
-  <input id="tLink" placeholder="YouTube ссылка">
-  <input id="tReward" type="number" placeholder="Награда USDT">
-  <button onclick="addTask()">Добавить задание</button>
+  <div class="card">
+    <b>Добавить задание</b>
+    <input id="tTitle" placeholder="Название">
+    <input id="tLink" placeholder="YouTube ссылка">
+    <input id="tReward" type="number" placeholder="Награда USDT">
+    <button onclick="addTask()">Добавить</button>
+  </div>
+
+  <div class="card">
+    <b>Заявки на вывод</b>
+    <div id="wdList"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div id="nav" class="bottom-nav" style="display:none">
+  <button onclick="show('home')">🏠<br>Дом</button>
+  <button onclick="show('elite')">💎<br>ELITE</button>
+  <button onclick="show('tasks')">🎯<br>Задачи</button>
+  <button onclick="show('team')">👥<br>Команда</button>
+  <button onclick="show('me')">👤<br>Мне</button>
 </div>
 
 <script>
-let users = JSON.parse(localStorage.getItem('users')||'{}');
-let tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
-let user = null;
+/* ❄️ Snow generator */
+for(let i=0;i<40;i++){
+  let s=document.createElement('div');
+  s.className='snowflake';
+  s.textContent='❄';
+  s.style.left=Math.random()*100+'vw';
+  s.style.fontSize=(Math.random()*10+10)+'px';
+  s.style.animationDuration=(Math.random()*5+5)+'s';
+  s.style.opacity=Math.random();
+  document.body.appendChild(s);
+}
+
+/* DATA */
+let users=JSON.parse(localStorage.getItem('users')||'{}');
+let tasks=JSON.parse(localStorage.getItem('tasks')||'[]');
+let withdrawals=JSON.parse(localStorage.getItem('withdrawals')||'[]');
+let user=null;
 
 function save(){
-  localStorage.setItem('users',JSON.stringify(users));
-  localStorage.setItem('tasks',JSON.stringify(tasks));
+ localStorage.setItem('users',JSON.stringify(users));
+ localStorage.setItem('tasks',JSON.stringify(tasks));
+ localStorage.setItem('withdrawals',JSON.stringify(withdrawals));
 }
 
 function loginUser(){
-  const l=login.value.trim(), p=pass.value;
-  if(!users[l]) users[l]={p,balance:0,done:[]};
-  if(users[l].p!==p) return alert('Пароль неверный');
-  user={u:l};
-  auth.style.display='none';
-  nav.style.display='flex';
-  show('home');
-  render();
+ let l=login.value.trim(),p=pass.value;
+ if(!users[l]) users[l]={p,balance:0,done:[]};
+ if(users[l].p!==p) return alert('Неверный пароль');
+ user={u:l};
+ auth.style.display='none';
+ nav.style.display='flex';
+ show('home'); render();
 }
 
 function show(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  if(id==='elite') renderElite();
-  if(id==='tasks') renderTasks();
-  if(id==='admin' && user.u!=='admin1') show('home');
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ if(id==='elite') renderElite();
+ if(id==='tasks') renderTasks();
+ if(id==='admin') renderWithdrawals();
 }
 
 function render(){
-  bal.textContent=users[user.u].balance;
-  bal2.textContent=users[user.u].balance;
-  ref.value=location.href+'?ref='+user.u;
-  if(user.u==='admin1'){
-    document.body.appendChild(admin);
-    admin.classList.add('active');
-  }
+ bal.textContent=users[user.u].balance;
+ bal2.textContent=users[user.u].balance;
+ ref.value=location.href+'?ref='+user.u;
+ if(user.u==='admin1'){ document.body.appendChild(admin); }
 }
 
 function renderElite(){
-  elite.innerHTML='<h3>ELITE</h3>';
-  const arr=[
-    [10,3],[50,16],[200,68],[600,216],[1200,480],
-    [2400,1104],[4800,2496],[9600,5760],[19200,13440],[38400,32640]
-  ];
-  arr.forEach((e,i)=>{
-    elite.innerHTML+=`<div class="card">
-    <b>ELITE ${i+1}</b><br>
-    Депозит: ${e[0]} USDT<br>
-    Доход: ${e[1]} USDT<br>
-    <button>Активировать</button>
-    </div>`;
-  });
+ elite.innerHTML='<h3>💎 ELITE</h3>';
+ let arr=[[10,3],[50,16],[200,68],[600,216],[1200,480],[2400,1104],[4800,2496],[9600,5760],[19200,13440],[38400,32640]];
+ arr.forEach((e,i)=>{
+  elite.innerHTML+=`<div class="card"><b>ELITE ${i+1}</b><br>Депозит: ${e[0]} USDT<br>Доход: ${e[1]} USDT</div>`;
+ });
 }
 
 function addTask(){
-  if(user.u!=='admin1') return;
-  tasks.push({t:tTitle.value,l:tLink.value,r:+tReward.value});
-  save();
-  alert('Задание добавлено');
+ if(user.u!=='admin1') return;
+ tasks.push({t:tTitle.value,l:tLink.value,r:+tReward.value});
+ save(); alert('Задание добавлено');
 }
 
 function renderTasks(){
-  taskList.innerHTML='';
-  tasks.forEach((t,i)=>{
-    if(users[user.u].done.includes(i)) return;
-    taskList.innerHTML+=`<div class="card">
+ taskList.innerHTML='';
+ tasks.forEach((t,i)=>{
+  if(users[user.u].done.includes(i)) return;
+  taskList.innerHTML+=`
+   <div class="card">
     <b>${t.t}</b><br>
     <a href="${t.l}" target="_blank">Перейти</a><br>
     Награда: ${t.r} USDT<br>
     <button onclick="doneTask(${i})">Выполнено</button>
-    </div>`;
-  });
+   </div>`;
+ });
 }
 
 function doneTask(i){
-  users[user.u].balance+=tasks[i].r;
-  users[user.u].done.push(i);
-  save();
-  render();
-  renderTasks();
+ users[user.u].balance+=tasks[i].r;
+ users[user.u].done.push(i);
+ save(); render(); renderTasks();
+}
+
+/* 💸 Withdraw */
+function withdraw(){
+ let a=+wdAmount.value;
+ if(a<=0||a>users[user.u].balance) return alert('Неверная сумма');
+ withdrawals.push({u:user.u,a,net:wdNet.value,addr:wdAddr.value});
+ users[user.u].balance-=a;
+ save(); render();
+ alert('Заявка отправлена');
+ wdAmount.value=''; wdAddr.value='';
+}
+
+function renderWithdrawals(){
+ if(user.u!=='admin1') return;
+ wdList.innerHTML='';
+ withdrawals.forEach((w,i)=>{
+  wdList.innerHTML+=`
+   <div class="card">
+    <b>${w.u}</b><br>${w.a} USDT<br>${w.net}<br>${w.addr}<br>
+    <button onclick="approve(${i})">Подтвердить</button>
+   </div>`;
+ });
+}
+
+function approve(i){
+ withdrawals.splice(i,1);
+ save(); renderWithdrawals();
+ alert('Вывод подтверждён');
 }
 
 function setBalance(){
-  if(user.u!=='admin1') return;
-  users[abUser.value].balance=+abSum.value;
-  save();
-  alert('Готово');
+ if(user.u!=='admin1') return;
+ users[abUser.value].balance=+abSum.value;
+ save(); alert('Баланс изменён');
 }
 </script>
+
 </body>
 </html>
