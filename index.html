@@ -2,185 +2,42 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>ELITE INVEST</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
+<title>NEXTRICH — Вход</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{margin:0;font-family:Arial;background:#1a0b2e;color:#fff}
-.hidden{display:none}
-header{padding:15px;text-align:center;background:#6a1b9a}
-nav{position:fixed;bottom:0;width:100%;display:flex;background:#2a0f4d}
-nav button{flex:1;padding:10px;background:none;border:none;color:#fff}
-section{padding:20px;margin-bottom:60px}
-.card{background:#2e145f;padding:15px;border-radius:10px;margin-bottom:10px}
-button{background:#ffcc00;border:none;padding:10px;border-radius:8px;font-weight:bold;margin-top:5px}
-input,select{width:100%;padding:8px;margin:5px 0;border-radius:6px;border:none}
-a{color:#ffcc00}
+body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff}
+.card{max-width:360px;margin:60px auto;background:#111;padding:20px;border-radius:12px}
+input,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:0}
+button{background:#4f7cff;color:#fff}
 </style>
 </head>
-
 <body>
 
-<header>ELITE INVEST</header>
+<div class="card">
+<h2>NEXTRICH</h2>
 
-<!-- AUTH -->
-<section id="auth">
-  <h3>Вход / Регистрация</h3>
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Пароль">
-  <button onclick="login()">Войти</button>
-</section>
+<input id="u" placeholder="Логин">
+<input id="p" type="password" placeholder="Пароль">
 
-<!-- HOME -->
-<section id="home" class="hidden">
-  <div class="card">Добро пожаловать в ELITE INVEST</div>
-</section>
-
-<!-- TASKS -->
-<section id="tasks" class="hidden">
-  <h3>Задания</h3>
-  <div id="taskList"></div>
-
-  <!-- ТОЛЬКО ДЛЯ ТЕБЯ (АДМИН) -->
-  <div class="card">
-    <h4>➕ Добавить задание (АДМИН)</h4>
-    <input id="taskLink" placeholder="YouTube ссылка">
-    <input id="taskReward" placeholder="Награда USDT">
-    <button onclick="addTask()">Добавить</button>
-  </div>
-</section>
-
-<!-- TEAM -->
-<section id="team" class="hidden">
-  <div class="card">
-    <div>Ваша ссылка:</div>
-    <div id="refLink"></div>
-    <div>Приглашено: <span id="refCount">0</span></div>
-  </div>
-</section>
-
-<!-- ELITE -->
-<section id="elite" class="hidden"></section>
-
-<!-- PROFILE -->
-<section id="profile" class="hidden">
-  <div class="card">Баланс: <b id="balance">0</b> USDT</div>
-
-  <h4>Вывод средств</h4>
-  <input id="withdrawAmount" placeholder="Сумма">
-  <select id="network">
-    <option>Polygon</option>
-    <option>TRC20</option>
-    <option>ERC20</option>
-    <option>LTC</option>
-  </select>
-  <input id="wallet" placeholder="Адрес кошелька">
-  <button onclick="withdraw()">Вывести</button>
-</section>
-
-<nav>
-  <button onclick="show('home')">Дом</button>
-  <button onclick="show('tasks')">Задачи</button>
-  <button onclick="show('team')">Команда</button>
-  <button onclick="show('elite')">ELITE</button>
-  <button onclick="show('profile')">Мне</button>
-</nav>
+<button onclick="login()">Войти / Регистрация</button>
+</div>
 
 <script>
-const firebaseConfig = {
-  /* ВСТАВЬ СЮДА СВОЙ firebaseConfig */
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-let user;
-
-function show(id){
-  document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-}
-
 function login(){
-  auth.signInWithEmailAndPassword(email.value,password.value)
-  .catch(()=>auth.createUserWithEmailAndPassword(email.value,password.value));
-}
+  const u = document.getElementById('u').value;
+  const p = document.getElementById('p').value;
+  if(!u || !p) return alert('Введите данные');
 
-auth.onAuthStateChanged(u=>{
-  if(u){
-    user=u;
-    authDiv.classList.add("hidden");
-    show("home");
-    initUser();
-    loadTasks();
-    loadElite();
-  }
-});
+  const user = {
+    u,
+    balance: 0,
+    elite: 'ELITE 0',
+    ref: Math.random().toString(36).slice(2),
+    tasksDone: []
+  };
 
-function initUser(){
-  db.collection("users").doc(user.uid).get().then(d=>{
-    if(!d.exists){
-      db.collection("users").doc(user.uid).set({balance:0});
-    }else{
-      balance.innerText=d.data().balance;
-    }
-  });
-}
-
-function addTask(){
-  db.collection("tasks").add({
-    link:taskLink.value,
-    reward:Number(taskReward.value)
-  });
-}
-
-function loadTasks(){
-  db.collection("tasks").onSnapshot(snap=>{
-    taskList.innerHTML="";
-    snap.forEach(doc=>{
-      let t=doc.data();
-      taskList.innerHTML+=`
-      <div class="card">
-        <a href="${t.link}" target="_blank">Перейти на YouTube</a>
-        <div>Награда: ${t.reward} USDT</div>
-        <button onclick="completeTask('${doc.id}',${t.reward})">Я выполнил</button>
-      </div>`;
-    });
-  });
-}
-
-function completeTask(id,reward){
-  db.collection("users").doc(user.uid).update({
-    balance:firebase.firestore.FieldValue.increment(reward)
-  });
-  alert("Награда начислена");
-}
-
-function loadElite(){
-  let html="";
-  for(let i=1;i<=10;i++){
-    html+=`
-    <div class="card">
-      ELITE ${i}
-      <button onclick="alert('Перейдите к пополнению')">Активировать</button>
-    </div>`;
-  }
-  elite.innerHTML=html;
-}
-
-function withdraw(){
-  db.collection("withdraws").add({
-    uid:user.uid,
-    amount:withdrawAmount.value,
-    network:network.value,
-    wallet:wallet.value,
-    status:"pending"
-  });
-  alert("Заявка отправлена");
+  localStorage.setItem('user', JSON.stringify(user));
+  location.href='app.html';
 }
 </script>
 
