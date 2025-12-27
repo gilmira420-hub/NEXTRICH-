@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>NEXTRICH — Личный кабинет</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{margin:0;font-family:Arial;background:#0f1115;color:#fff}
+.menu{display:flex;justify-content:space-around;background:#151820;padding:10px 0;position:fixed;bottom:0;width:100%}
+.menu div{font-size:12px;cursor:pointer;opacity:.6}
+.menu .active{opacity:1;color:#4f7cff}
+.page{display:none;padding:15px 15px 70px}
+.card{background:#1c1f2a;padding:15px;border-radius:10px;margin-bottom:12px}
+button{width:100%;padding:12px;border:none;border-radius:8px;background:#4f7cff;color:#fff;font-size:15px}
+input{width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:none}
+.admin{display:none}
+</style>
+</head>
+<body>
+
+<div id="home" class="page">
+  <div class="card">
+    <h3>Добро пожаловать</h3>
+    <p>Логин: <b id="login"></b></p>
+    <p>Баланс: <b>$<span id="bal">0</span></b></p>
+    <p>ELITE: <b id="elite"></b></p>
+  </div>
+</div>
+
+<div id="tasks" class="page">
+  <div class="card">
+    <h3>Задачи на сегодня</h3>
+    <div id="taskList">Нет задач</div>
+  </div>
+</div>
+
+<div id="team" class="page">
+  <div class="card">
+    <h3>Команда</h3>
+    <p>Ваша ссылка:</p>
+    <small id="ref"></small>
+  </div>
+</div>
+
+<div id="elitePage" class="page">
+  <div class="card"><b>ELITE 1</b> — $10</div>
+  <div class="card"><b>ELITE 2</b> — $50</div>
+  <div class="card"><b>ELITE 3</b> — $200</div>
+  <div class="card"><b>ELITE 4</b> — $400</div>
+  <div class="card"><b>ELITE 5</b> — $1000</div>
+</div>
+
+<div id="me" class="page">
+  <div class="card">
+    <button onclick="logout()">Выйти</button>
+  </div>
+</div>
+
+<!-- АДМИН -->
+<div id="admin" class="page admin">
+  <div class="card">
+    <h3>Админ — добавить задачу</h3>
+    <input id="yt" placeholder="YouTube ссылка">
+    <input id="reward" placeholder="Награда $">
+    <button onclick="addTask()">Добавить</button>
+  </div>
+</div>
+
+<div class="menu">
+  <div onclick="show('home',this)">Дом</div>
+  <div onclick="show('tasks',this)">Задачи</div>
+  <div onclick="show('team',this)">Команда</div>
+  <div onclick="show('elitePage',this)">ELITE</div>
+  <div onclick="show('me',this)">Мне</div>
+</div>
+
+<script>
+const user = JSON.parse(localStorage.getItem('user'));
+if(!user){location.href='index.html';}
+
+login.innerText=user.u;
+bal.innerText=user.balance.toFixed(2);
+elite.innerText=user.elite;
+ref.innerText=location.origin+'?ref='+user.u;
+
+if(user.u==='admin'){document.getElementById('admin').style.display='block'}
+
+const tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
+renderTasks();
+
+function show(id,el){
+ document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+ document.getElementById(id).style.display='block';
+ document.querySelectorAll('.menu div').forEach(m=>m.classList.remove('active'));
+ el.classList.add('active');
+}
+show('home',document.querySelector('.menu div'));
+
+function renderTasks(){
+ if(!tasks.length){taskList.innerHTML='Нет задач';return;}
+ taskList.innerHTML='';
+ tasks.forEach((t,i)=>{
+  const d=document.createElement('div');
+  d.className='card';
+  d.innerHTML=`<a href="${t.link}" target="_blank">Перейти</a>
+  <p>Награда $${t.reward}</p>
+  <button onclick="done(${i})">Выполнено</button>`;
+  taskList.appendChild(d);
+ });
+}
+
+function done(i){
+ user.balance+=Number(tasks[i].reward);
+ localStorage.setItem('user',JSON.stringify(user));
+ bal.innerText=user.balance.toFixed(2);
+ alert('Зачислено');
+}
+
+function addTask(){
+ tasks.push({link:yt.value,reward:reward.value});
+ localStorage.setItem('tasks',JSON.stringify(tasks));
+ alert('Задача добавлена');
+}
+
+function logout(){
+ localStorage.removeItem('user');
+ location.href='index.html';
+}
+</script>
+</body>
+</html>
