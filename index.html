@@ -2,193 +2,187 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>NEXTRICH</title>
+<title>ELITE INVEST</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#5a2ca0;
-  color:#fff;
-  padding-bottom:70px;
-}
-header{
-  text-align:center;
-  padding:15px;
-  font-size:22px;
-  font-weight:bold;
-}
-.page{display:none;padding:15px;}
-.page.active{display:block;}
-
-.card{
-  background:#fff;
-  color:#000;
-  border-radius:14px;
-  padding:15px;
-  margin-bottom:15px;
-}
-
-.elite-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-button{
-  background:#ffd600;
-  border:none;
-  padding:10px 15px;
-  border-radius:10px;
-  font-weight:bold;
-}
-
-select{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-}
-
-.address{
-  background:#eee;
-  color:#000;
-  padding:10px;
-  border-radius:8px;
-  margin-top:10px;
-  word-break:break-all;
-}
-
-/* bottom menu */
-.nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#fff;
-  display:flex;
-  justify-content:space-around;
-  padding:8px 0;
-}
-.nav div{
-  color:#000;
-  font-size:12px;
-  text-align:center;
-}
-.nav button{
-  background:none;
-  border:none;
-  font-weight:bold;
-}
+body{margin:0;font-family:Arial;background:#1a0b2e;color:#fff}
+.hidden{display:none}
+header{padding:15px;text-align:center;background:#6a1b9a}
+nav{position:fixed;bottom:0;width:100%;display:flex;background:#2a0f4d}
+nav button{flex:1;padding:10px;background:none;border:none;color:#fff}
+section{padding:20px;margin-bottom:60px}
+.card{background:#2e145f;padding:15px;border-radius:10px;margin-bottom:10px}
+button{background:#ffcc00;border:none;padding:10px;border-radius:8px;font-weight:bold;margin-top:5px}
+input,select{width:100%;padding:8px;margin:5px 0;border-radius:6px;border:none}
+a{color:#ffcc00}
 </style>
 </head>
 
 <body>
 
-<header>NEXTRICH</header>
+<header>ELITE INVEST</header>
 
-<!-- ДОМ -->
-<div id="home" class="page active">
+<!-- AUTH -->
+<section id="auth">
+  <h3>Вход / Регистрация</h3>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Пароль">
+  <button onclick="login()">Войти</button>
+</section>
+
+<!-- HOME -->
+<section id="home" class="hidden">
+  <div class="card">Добро пожаловать в ELITE INVEST</div>
+</section>
+
+<!-- TASKS -->
+<section id="tasks" class="hidden">
+  <h3>Задания</h3>
+  <div id="taskList"></div>
+
+  <!-- ТОЛЬКО ДЛЯ ТЕБЯ (АДМИН) -->
   <div class="card">
-    <b>Добро пожаловать в NEXTRICH</b><br>
-    Инвестиционная платформа
+    <h4>➕ Добавить задание (АДМИН)</h4>
+    <input id="taskLink" placeholder="YouTube ссылка">
+    <input id="taskReward" placeholder="Награда USDT">
+    <button onclick="addTask()">Добавить</button>
   </div>
-</div>
+</section>
 
-<!-- ЗАДАЧИ -->
-<div id="tasks" class="page">
-  <div class="card">Задачи появятся позже</div>
-</div>
-
-<!-- КОМАНДА -->
-<div id="team" class="page">
-  <div class="card">Ваша команда</div>
-</div>
+<!-- TEAM -->
+<section id="team" class="hidden">
+  <div class="card">
+    <div>Ваша ссылка:</div>
+    <div id="refLink"></div>
+    <div>Приглашено: <span id="refCount">0</span></div>
+  </div>
+</section>
 
 <!-- ELITE -->
-<div id="elite" class="page">
-  <div class="card elite-row">
-    <div>
-      <b>ELITE 1</b><br>
-      10 USDT → 3 USDT / день
-    </div>
-    <button onclick="openPay()">Активировать</button>
-  </div>
+<section id="elite" class="hidden"></section>
 
-  <div class="card elite-row">
-    <div>
-      <b>ELITE 2</b><br>
-      50 USDT → 16 USDT / день
-    </div>
-    <button onclick="openPay()">Активировать</button>
-  </div>
+<!-- PROFILE -->
+<section id="profile" class="hidden">
+  <div class="card">Баланс: <b id="balance">0</b> USDT</div>
 
-  <div class="card elite-row">
-    <div>
-      <b>ELITE 3</b><br>
-      200 USDT → 68 USDT / день
-    </div>
-    <button onclick="openPay()">Активировать</button>
-  </div>
-</div>
+  <h4>Вывод средств</h4>
+  <input id="withdrawAmount" placeholder="Сумма">
+  <select id="network">
+    <option>Polygon</option>
+    <option>TRC20</option>
+    <option>ERC20</option>
+    <option>LTC</option>
+  </select>
+  <input id="wallet" placeholder="Адрес кошелька">
+  <button onclick="withdraw()">Вывести</button>
+</section>
 
-<!-- ПОПОЛНЕНИЕ -->
-<div id="pay" class="page">
-  <div class="card">
-    <b>Пополнение</b>
-
-    <select onchange="showAddr(this.value)">
-      <option value="">Выберите сеть</option>
-      <option value="polygon">USDT Polygon</option>
-      <option value="erc20">USDT ERC20</option>
-      <option value="trc20">USDT TRC20</option>
-      <option value="ltc">LTC</option>
-    </select>
-
-    <div id="addr" class="address" style="display:none"></div>
-
-    <button style="margin-top:15px;width:100%">Я оплатил</button>
-  </div>
-</div>
-
-<!-- МНЕ -->
-<div id="me" class="page">
-  <div class="card">
-    Профиль пользователя
-  </div>
-</div>
-
-<!-- NAV -->
-<div class="nav">
+<nav>
   <button onclick="show('home')">Дом</button>
   <button onclick="show('tasks')">Задачи</button>
   <button onclick="show('team')">Команда</button>
   <button onclick="show('elite')">ELITE</button>
-  <button onclick="show('me')">Мне</button>
-</div>
+  <button onclick="show('profile')">Мне</button>
+</nav>
 
 <script>
+const firebaseConfig = {
+  /* ВСТАВЬ СЮДА СВОЙ firebaseConfig */
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let user;
+
 function show(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
 }
 
-function openPay(){
-  show('pay');
+function login(){
+  auth.signInWithEmailAndPassword(email.value,password.value)
+  .catch(()=>auth.createUserWithEmailAndPassword(email.value,password.value));
 }
 
-function showAddr(v){
-  const a=document.getElementById('addr');
-  a.style.display='block';
+auth.onAuthStateChanged(u=>{
+  if(u){
+    user=u;
+    authDiv.classList.add("hidden");
+    show("home");
+    initUser();
+    loadTasks();
+    loadElite();
+  }
+});
 
-  if(v==='polygon'||v==='erc20')
-    a.innerText='0x386a41769648b8daca0c63271dc533ea787d67ba';
-  if(v==='trc20')
-    a.innerText='TRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu';
-  if(v==='ltc')
-    a.innerText='Lf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1';
+function initUser(){
+  db.collection("users").doc(user.uid).get().then(d=>{
+    if(!d.exists){
+      db.collection("users").doc(user.uid).set({balance:0});
+    }else{
+      balance.innerText=d.data().balance;
+    }
+  });
+}
+
+function addTask(){
+  db.collection("tasks").add({
+    link:taskLink.value,
+    reward:Number(taskReward.value)
+  });
+}
+
+function loadTasks(){
+  db.collection("tasks").onSnapshot(snap=>{
+    taskList.innerHTML="";
+    snap.forEach(doc=>{
+      let t=doc.data();
+      taskList.innerHTML+=`
+      <div class="card">
+        <a href="${t.link}" target="_blank">Перейти на YouTube</a>
+        <div>Награда: ${t.reward} USDT</div>
+        <button onclick="completeTask('${doc.id}',${t.reward})">Я выполнил</button>
+      </div>`;
+    });
+  });
+}
+
+function completeTask(id,reward){
+  db.collection("users").doc(user.uid).update({
+    balance:firebase.firestore.FieldValue.increment(reward)
+  });
+  alert("Награда начислена");
+}
+
+function loadElite(){
+  let html="";
+  for(let i=1;i<=10;i++){
+    html+=`
+    <div class="card">
+      ELITE ${i}
+      <button onclick="alert('Перейдите к пополнению')">Активировать</button>
+    </div>`;
+  }
+  elite.innerHTML=html;
+}
+
+function withdraw(){
+  db.collection("withdraws").add({
+    uid:user.uid,
+    amount:withdrawAmount.value,
+    network:network.value,
+    wallet:wallet.value,
+    status:"pending"
+  });
+  alert("Заявка отправлена");
 }
 </script>
 
 </body>
-</html>
+  </html>
