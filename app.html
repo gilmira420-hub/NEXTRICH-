@@ -5,126 +5,188 @@
 <title>NEXTRICH — Личный кабинет</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
+*{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#0f1115;color:#fff}
-.menu{display:flex;justify-content:space-around;background:#151820;padding:10px 0;position:fixed;bottom:0;width:100%}
-.menu div{font-size:12px;cursor:pointer;opacity:.6}
+h3{margin-top:0}
+.page{display:none;padding:14px 14px 80px}
+.card{background:#1c1f2a;padding:14px;border-radius:12px;margin-bottom:12px}
+.menu{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:#151820;padding:10px 0}
+.menu div{font-size:12px;opacity:.6;cursor:pointer}
 .menu .active{opacity:1;color:#4f7cff}
-.page{display:none;padding:15px 15px 70px}
-.card{background:#1c1f2a;padding:15px;border-radius:10px;margin-bottom:12px}
-button{width:100%;padding:12px;border:none;border-radius:8px;background:#4f7cff;color:#fff;font-size:15px}
-input{width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:none}
+button{width:100%;padding:12px;border:none;border-radius:10px;background:#4f7cff;color:#fff;font-size:15px}
+input,select{width:100%;padding:10px;border-radius:8px;border:none;margin-bottom:8px}
+small{opacity:.7}
 .admin{display:none}
+.badge{display:inline-block;padding:4px 8px;border-radius:8px;background:#2a2f3f;margin-left:6px}
 </style>
 </head>
 <body>
 
+<!-- HOME -->
 <div id="home" class="page">
   <div class="card">
     <h3>Добро пожаловать</h3>
-    <p>Логин: <b id="login"></b></p>
-    <p>Баланс: <b>$<span id="bal">0</span></b></p>
-    <p>ELITE: <b id="elite"></b></p>
+    <p>Логин: <b id="uLogin"></b></p>
+    <p>Баланс: <b>$<span id="uBal">0</span></b></p>
+    <p>Уровень: <b>ELITE <span id="uElite">0</span></b></p>
   </div>
 </div>
 
+<!-- TASKS -->
 <div id="tasks" class="page">
   <div class="card">
     <h3>Задачи на сегодня</h3>
-    <div id="taskList">Нет задач</div>
+    <div id="taskList"><small>Пока нет задач</small></div>
+  </div>
+
+  <div id="adminTasks" class="card admin">
+    <h3>Админ — добавить задачу</h3>
+    <input id="tLink" placeholder="YouTube ссылка">
+    <input id="tReward" type="number" placeholder="Награда, $">
+    <button onclick="addTask()">Добавить</button>
   </div>
 </div>
 
+<!-- TEAM -->
 <div id="team" class="page">
   <div class="card">
     <h3>Команда</h3>
-    <p>Ваша ссылка:</p>
-    <small id="ref"></small>
+    <p>Ваша реферальная ссылка:</p>
+    <small id="refLink"></small>
+    <p><small>Статистика (демо)</small></p>
+    <p>Регистраций: <b id="refCnt">0</b></p>
+    <p>Активных ELITE: <b id="refElite">0</b></p>
   </div>
 </div>
 
-<div id="elitePage" class="page">
-  <div class="card"><b>ELITE 1</b> — $10</div>
-  <div class="card"><b>ELITE 2</b> — $50</div>
-  <div class="card"><b>ELITE 3</b> — $200</div>
-  <div class="card"><b>ELITE 4</b> — $400</div>
-  <div class="card"><b>ELITE 5</b> — $1000</div>
+<!-- ELITE -->
+<div id="elite" class="page">
+  <h3>ELITE пакеты</h3>
+
+  <!-- 1–10 -->
+  <div class="card"><b>ELITE 1</b><br>Депозит: 10 USDT<br>Доход: 3 USDT/день<br><br><button onclick="buyElite(1,10)">Активировать</button></div>
+  <div class="card"><b>ELITE 2</b><br>Депозит: 50 USDT<br>Доход: 16 USDT/день<br><br><button onclick="buyElite(2,50)">Активировать</button></div>
+  <div class="card"><b>ELITE 3</b><br>Депозит: 200 USDT<br>Доход: 68 USDT/день<br><br><button onclick="buyElite(3,200)">Активировать</button></div>
+  <div class="card"><b>ELITE 4</b><br>Депозит: 600 USDT<br>Доход: 216 USDT/день<br><br><button onclick="buyElite(4,600)">Активировать</button></div>
+  <div class="card"><b>ELITE 5</b><br>Депозит: 1200 USDT<br>Доход: 480 USDT/день<br><br><button onclick="buyElite(5,1200)">Активировать</button></div>
+  <div class="card"><b>ELITE 6</b><br>Депозит: 2400 USDT<br>Доход: 1104 USDT/день<br><br><button onclick="buyElite(6,2400)">Активировать</button></div>
+  <div class="card"><b>ELITE 7</b><br>Депозит: 4800 USDT<br>Доход: 2496 USDT/день<br><br><button onclick="buyElite(7,4800)">Активировать</button></div>
+  <div class="card"><b>ELITE 8</b><br>Депозит: 9600 USDT<br>Доход: 5760 USDT/день<br><br><button onclick="buyElite(8,9600)">Активировать</button></div>
+  <div class="card"><b>ELITE 9</b><br>Депозит: 19200 USDT<br>Доход: 13440 USDT/день<br><br><button onclick="buyElite(9,19200)">Активировать</button></div>
+  <div class="card"><b>ELITE 10</b><br>Депозит: 38400 USDT<br>Доход: 32640 USDT/день<br><br><button onclick="buyElite(10,38400)">Активировать</button></div>
 </div>
 
+<!-- ME -->
 <div id="me" class="page">
+  <div class="card">
+    <h3>Пополнение</h3>
+    <p><b>USDT (Polygon)</b><br>0x386a41769648b8daca0c63271dc533ea787d67ba</p>
+    <p><b>USDT (TRC20)</b><br>TRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu</p>
+    <p><b>USDT (ERC20)</b><br>0x386a41769648b8daca0c63271dc533ea787d67ba</p>
+    <p><b>LTC</b><br>Lf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1</p>
+    <small>После оплаты дождитесь ручного подтверждения.</small>
+  </div>
+
+  <div class="card">
+    <h3>Вывод средств</h3>
+    <input id="wSum" type="number" placeholder="Сумма, $">
+    <select id="wNet">
+      <option>USDT Polygon</option>
+      <option>USDT TRC20</option>
+      <option>USDT ERC20</option>
+      <option>LTC</option>
+    </select>
+    <input id="wAddr" placeholder="Адрес">
+    <button onclick="requestWithdraw()">Создать заявку</button>
+    <div id="wInfo"><small>Заявки обрабатываются вручную.</small></div>
+  </div>
+
   <div class="card">
     <button onclick="logout()">Выйти</button>
   </div>
 </div>
 
-<!-- АДМИН -->
-<div id="admin" class="page admin">
-  <div class="card">
-    <h3>Админ — добавить задачу</h3>
-    <input id="yt" placeholder="YouTube ссылка">
-    <input id="reward" placeholder="Награда $">
-    <button onclick="addTask()">Добавить</button>
-  </div>
-</div>
-
+<!-- MENU -->
 <div class="menu">
   <div onclick="show('home',this)">Дом</div>
   <div onclick="show('tasks',this)">Задачи</div>
   <div onclick="show('team',this)">Команда</div>
-  <div onclick="show('elitePage',this)">ELITE</div>
+  <div onclick="show('elite',this)">ELITE</div>
   <div onclick="show('me',this)">Мне</div>
 </div>
 
 <script>
-const user = JSON.parse(localStorage.getItem('user'));
-if(!user){location.href='index.html';}
+/* AUTH GUARD */
+let user = JSON.parse(localStorage.getItem('user'));
+if(!user){ location.href='index.html'; }
 
-login.innerText=user.u;
-bal.innerText=user.balance.toFixed(2);
-elite.innerText=user.elite;
-ref.innerText=location.origin+'?ref='+user.u;
+/* INIT */
+uLogin.textContent = user.u || 'user';
+uBal.textContent = (user.balance||0).toFixed(2);
+uElite.textContent = user.elite||0;
+refLink.textContent = location.origin + location.pathname + '?ref=' + (user.u||'user');
+if(user.u==='admin'){ document.querySelectorAll('.admin').forEach(x=>x.style.display='block'); }
 
-if(user.u==='admin'){document.getElementById('admin').style.display='block'}
+/* NAV */
+function show(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.getElementById(id).style.display='block';
+  document.querySelectorAll('.menu div').forEach(m=>m.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+show('home', document.querySelector('.menu div'));
 
-const tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
+/* ELITE */
+function buyElite(level, price){
+  user.elite = level;
+  localStorage.setItem('user', JSON.stringify(user));
+  alert('Вы выбрали ELITE '+level+'. Пополните '+price+' USDT.');
+  show('me', document.querySelectorAll('.menu div')[4]);
+}
+
+/* TASKS */
+let tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
 renderTasks();
 
-function show(id,el){
- document.querySelectorAll('.page').forEach(p=>p.style.display='none');
- document.getElementById(id).style.display='block';
- document.querySelectorAll('.menu div').forEach(m=>m.classList.remove('active'));
- el.classList.add('active');
-}
-show('home',document.querySelector('.menu div'));
-
 function renderTasks(){
- if(!tasks.length){taskList.innerHTML='Нет задач';return;}
- taskList.innerHTML='';
- tasks.forEach((t,i)=>{
-  const d=document.createElement('div');
-  d.className='card';
-  d.innerHTML=`<a href="${t.link}" target="_blank">Перейти</a>
-  <p>Награда $${t.reward}</p>
-  <button onclick="done(${i})">Выполнено</button>`;
-  taskList.appendChild(d);
- });
-}
-
-function done(i){
- user.balance+=Number(tasks[i].reward);
- localStorage.setItem('user',JSON.stringify(user));
- bal.innerText=user.balance.toFixed(2);
- alert('Зачислено');
+  const box = document.getElementById('taskList');
+  box.innerHTML = '';
+  if(!tasks.length){ box.innerHTML='<small>Пока нет задач</small>'; return; }
+  tasks.forEach((t,i)=>{
+    const d=document.createElement('div');
+    d.className='card';
+    d.innerHTML = `<a href="${t.link}" target="_blank">Перейти</a>
+    <p>Награда: $${t.reward}</p>
+    <button onclick="doneTask(${i})">Выполнено</button>`;
+    box.appendChild(d);
+  });
 }
 
 function addTask(){
- tasks.push({link:yt.value,reward:reward.value});
- localStorage.setItem('tasks',JSON.stringify(tasks));
- alert('Задача добавлена');
+  tasks.push({link:tLink.value, reward:Number(tReward.value)});
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+  tLink.value=''; tReward.value='';
+  renderTasks(); alert('Задача добавлена');
 }
 
+function doneTask(i){
+  user.balance = (user.balance||0) + Number(tasks[i].reward);
+  localStorage.setItem('user', JSON.stringify(user));
+  uBal.textContent = user.balance.toFixed(2);
+  alert('Зачислено');
+}
+
+/* WITHDRAW */
+function requestWithdraw(){
+  if(!wSum.value || !wAddr.value) return alert('Заполните все поля');
+  alert('Заявка создана. Обработка вручную.');
+  wSum.value=''; wAddr.value='';
+}
+
+/* LOGOUT */
 function logout(){
- localStorage.removeItem('user');
- location.href='index.html';
+  localStorage.removeItem('user');
+  location.href='index.html';
 }
 </script>
 </body>
