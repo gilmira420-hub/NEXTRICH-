@@ -3,243 +3,170 @@
 <head>
 <meta charset="UTF-8">
 <title>NEXTRICH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{margin:0;background:#0f1115;color:#fff;font-family:Arial}
-nav{display:flex;gap:8px;justify-content:center;background:#1c1f2a;padding:10px}
-nav button{background:#2b2f3a;color:#fff;border:none;padding:10px 12px;border-radius:10px}
+body{font-family:Arial;background:#111;color:#fff;margin:0}
 .page{display:none;padding:15px}
 .page.active{display:block}
-.card{background:#1c1f2a;padding:15px;border-radius:14px;margin-bottom:12px}
-input,select,button{width:100%;padding:10px;border-radius:10px;border:none;margin-bottom:8px}
-button{background:#4f7cff;color:#fff;font-size:15px}
-.admin{border:1px solid #ffb300}
-small{opacity:.7}
+input,button{width:100%;padding:10px;margin:5px 0}
+button{background:#00c853;border:none;color:#000;font-weight:bold}
+.card{background:#1c1c1c;padding:15px;margin:10px 0;border-radius:8px}
+nav{display:flex;justify-content:space-around;background:#000;padding:10px}
+nav button{width:auto;background:#222;color:#fff}
+.admin{border:2px solid #ff9800}
 </style>
 </head>
 <body>
 
 <!-- AUTH -->
 <div id="auth" class="page active">
-  <div class="card">
-    <h2>NEXTRICH</h2>
-    <input id="login" placeholder="Логин">
-    <input id="pass" type="password" placeholder="Пароль">
-    <button onclick="enter()">Войти / Регистрация</button>
-    <small>Платформа заданий и вознаграждений</small>
-  </div>
+  <h2>NEXTRICH</h2>
+  <input id="login" placeholder="Логин">
+  <input id="pass" type="password" placeholder="Пароль">
+  <button onclick="loginUser()">Войти / Регистрация</button>
 </div>
 
 <!-- NAV -->
 <nav id="nav" style="display:none">
-  <button onclick="openPage('home')">Дом</button>
-  <button onclick="openPage('elite')">ELITE</button>
-  <button onclick="openPage('tasks')">Задачи</button>
-  <button onclick="openPage('team')">Команда</button>
-  <button onclick="openPage('me')">Мне</button>
-  <button onclick="logout()">Выход</button>
+  <button onclick="show('home')">Дом</button>
+  <button onclick="show('elite')">ELITE</button>
+  <button onclick="show('tasks')">Задачи</button>
+  <button onclick="show('team')">Команда</button>
+  <button onclick="show('me')">Мне</button>
 </nav>
 
 <!-- HOME -->
 <div id="home" class="page">
-  <div class="card">
-    <h3>Баланс: <span id="bal">0</span> USDT</h3>
-    <div>Ваш ELITE: <span id="eliteLvl">—</span></div>
-  </div>
+  <h3>Добро пожаловать</h3>
+  <p>Ваш баланс: <b id="bal">0</b> USDT</p>
 </div>
 
 <!-- ELITE -->
-<div id="elite" class="page">
-  <div id="eliteList"></div>
-</div>
+<div id="elite" class="page"></div>
 
 <!-- TASKS -->
 <div id="tasks" class="page">
+  <h3>Задания</h3>
   <div id="taskList"></div>
-
-  <div id="addTask" class="card admin" style="display:none">
-    <h4>Добавить задание (admin)</h4>
-    <input id="tLink" placeholder="YouTube ссылка">
-    <input id="tReward" type="number" placeholder="Награда">
-    <button onclick="addTask()">Добавить</button>
-  </div>
 </div>
 
 <!-- TEAM -->
 <div id="team" class="page">
-  <div class="card">
-    <div>Ваша реферальная ссылка:</div>
-    <small id="refLink"></small>
-  </div>
+  <h3>Команда</h3>
+  <p>Ваша ссылка:</p>
+  <input id="ref" readonly>
 </div>
 
 <!-- ME -->
 <div id="me" class="page">
-  <div class="card">
-    <h4>Пополнение</h4>
-    <small>
-USDT Polygon: 0x386a41769648b8daca0c63271dc533ea787d67ba<br>
-USDT ERC20: 0x386a41769648b8daca0c63271dc533ea787d67ba<br>
-USDT TRC20: TRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu<br>
-LTC: Lf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1
-    </small>
-  </div>
-
-  <div class="card">
-    <h4>Я оплатил</h4>
-    <select id="pNet">
-      <option>USDT Polygon</option>
-      <option>USDT TRC20</option>
-      <option>USDT ERC20</option>
-      <option>LTC</option>
-    </select>
-    <input id="pSum" type="number" placeholder="Сумма">
-    <input id="pTx" placeholder="TxID / комментарий">
-    <button onclick="paid()">Отправить заявку</button>
-  </div>
+  <h3>Кабинет</h3>
+  <p>Баланс: <b id="bal2">0</b> USDT</p>
 </div>
 
 <!-- ADMIN -->
-<div id="adminPays" class="page admin">
-  <div class="card">
-    <h3>Админ — заявки на пополнение</h3>
-    <div id="payList"></div>
-  </div>
+<div id="admin" class="page admin">
+  <h3>АДМИН-КАБИНЕТ</h3>
+
+  <h4>Изменить баланс</h4>
+  <input id="abUser" placeholder="Логин">
+  <input id="abSum" type="number" placeholder="Баланс">
+  <button onclick="setBalance()">Установить</button>
+
+  <h4>Добавить задание</h4>
+  <input id="tTitle" placeholder="Название">
+  <input id="tLink" placeholder="YouTube ссылка">
+  <input id="tReward" type="number" placeholder="Награда USDT">
+  <button onclick="addTask()">Добавить задание</button>
 </div>
 
 <script>
 let users = JSON.parse(localStorage.getItem('users')||'{}');
-let user = null;
-let pays = JSON.parse(localStorage.getItem('pays')||'[]');
 let tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
+let user = null;
 
-const elites=[
-{l:1,d:10,p:3},{l:2,d:50,p:16},{l:3,d:200,p:68},
-{l:4,d:600,p:216},{l:5,d:1200,p:480},{l:6,d:2400,p:1104},
-{l:7,d:4800,p:2496},{l:8,d:9600,p:5760},
-{l:9,d:19200,p:13440},{l:10,d:38400,p:32640}
-];
-
-function enter(){
-  if(!login.value || !pass.value){
-    alert('Введите логин и пароль'); return;
-  }
-
-  if(login.value==='admin1' && pass.value!=='admin1'){
-    alert('Неверный пароль администратора'); return;
-  }
-
-  if(!users[login.value]){
-    users[login.value]={u:login.value,balance:0,elite:0};
-  }
-
-  user=users[login.value];
+function save(){
   localStorage.setItem('users',JSON.stringify(users));
-  localStorage.setItem('user',JSON.stringify(user));
-  init();
+  localStorage.setItem('tasks',JSON.stringify(tasks));
 }
 
-function init(){
+function loginUser(){
+  const l=login.value.trim(), p=pass.value;
+  if(!users[l]) users[l]={p,balance:0,done:[]};
+  if(users[l].p!==p) return alert('Пароль неверный');
+  user={u:l};
   auth.style.display='none';
   nav.style.display='flex';
-  openPage('home');
-  bal.innerText=user.balance;
-  eliteLvl.innerText=user.elite||'—';
-  renderElite();
-  renderTasks();
-  refLink.innerText=location.href.split('?')[0]+'?ref='+user.u;
-
-  if(user.u==='admin1'){
-    addTask.style.display='block';
-    openPage('adminPays');
-    renderPays();
-  }
+  show('home');
+  render();
 }
 
-function openPage(id){
+function show(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  if(id==='elite') renderElite();
+  if(id==='tasks') renderTasks();
+  if(id==='admin' && user.u!=='admin1') show('home');
+}
+
+function render(){
+  bal.textContent=users[user.u].balance;
+  bal2.textContent=users[user.u].balance;
+  ref.value=location.href+'?ref='+user.u;
+  if(user.u==='admin1'){
+    document.body.appendChild(admin);
+    admin.classList.add('active');
+  }
 }
 
 function renderElite(){
-  eliteList.innerHTML='';
-  elites.forEach(e=>{
-    eliteList.innerHTML+=`
-    <div class="card">
-      <b>ELITE ${e.l}</b><br>
-      Депозит ${e.d} USDT<br>
-      Доход ${e.p} USDT<br><br>
-      <button onclick="buyElite(${e.l})">Активировать</button>
+  elite.innerHTML='<h3>ELITE</h3>';
+  const arr=[
+    [10,3],[50,16],[200,68],[600,216],[1200,480],
+    [2400,1104],[4800,2496],[9600,5760],[19200,13440],[38400,32640]
+  ];
+  arr.forEach((e,i)=>{
+    elite.innerHTML+=`<div class="card">
+    <b>ELITE ${i+1}</b><br>
+    Депозит: ${e[0]} USDT<br>
+    Доход: ${e[1]} USDT<br>
+    <button>Активировать</button>
     </div>`;
   });
-}
-
-function buyElite(l){
-  user.elite=l;
-  users[user.u]=user;
-  localStorage.setItem('users',JSON.stringify(users));
-  openPage('me');
-}
-
-function paid(){
-  pays.push({u:user.u,sum:+pSum.value,net:pNet.value,tx:pTx.value});
-  localStorage.setItem('pays',JSON.stringify(pays));
-  alert('Заявка отправлена');
-}
-
-function renderPays(){
-  payList.innerHTML='';
-  pays.forEach((p,i)=>{
-    payList.innerHTML+=`
-    <div class="card">
-      ${p.u} — ${p.sum} (${p.net})<br>
-      <button onclick="approve(${i})">Подтвердить</button>
-    </div>`;
-  });
-}
-
-function approve(i){
-  let p=pays[i];
-  users[p.u].balance+=p.sum;
-  localStorage.setItem('users',JSON.stringify(users));
-  pays.splice(i,1);
-  localStorage.setItem('pays',JSON.stringify(pays));
-  renderPays();
 }
 
 function addTask(){
-  tasks.push({link:tLink.value,rew:+tReward.value});
-  localStorage.setItem('tasks',JSON.stringify(tasks));
-  renderTasks();
+  if(user.u!=='admin1') return;
+  tasks.push({t:tTitle.value,l:tLink.value,r:+tReward.value});
+  save();
+  alert('Задание добавлено');
 }
 
 function renderTasks(){
   taskList.innerHTML='';
   tasks.forEach((t,i)=>{
-    taskList.innerHTML+=`
-    <div class="card">
-      <a href="${t.link}" target="_blank">YouTube</a><br>
-      Награда ${t.rew} USDT<br>
-      <button onclick="doneTask(${i})">Выполнено</button>
+    if(users[user.u].done.includes(i)) return;
+    taskList.innerHTML+=`<div class="card">
+    <b>${t.t}</b><br>
+    <a href="${t.l}" target="_blank">Перейти</a><br>
+    Награда: ${t.r} USDT<br>
+    <button onclick="doneTask(${i})">Выполнено</button>
     </div>`;
   });
 }
 
 function doneTask(i){
-  user.balance+=tasks[i].rew;
-  users[user.u]=user;
-  localStorage.setItem('users',JSON.stringify(users));
-  bal.innerText=user.balance;
-  alert('Начислено');
+  users[user.u].balance+=tasks[i].r;
+  users[user.u].done.push(i);
+  save();
+  render();
+  renderTasks();
 }
 
-function logout(){location.reload();}
-
-if(localStorage.getItem('user')){
-  user=JSON.parse(localStorage.getItem('user'));
-  init();
+function setBalance(){
+  if(user.u!=='admin1') return;
+  users[abUser.value].balance=+abSum.value;
+  save();
+  alert('Готово');
 }
 </script>
-
 </body>
 </html>
