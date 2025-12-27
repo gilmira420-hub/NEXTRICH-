@@ -6,64 +6,79 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #5a2ca0;
-  color: #fff;
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#5a2ca0;
+  color:#fff;
+  padding-bottom:70px;
+}
+header{
+  text-align:center;
+  padding:15px;
+  font-size:22px;
+  font-weight:bold;
+}
+.page{display:none;padding:15px;}
+.page.active{display:block;}
+
+.card{
+  background:#fff;
+  color:#000;
+  border-radius:14px;
+  padding:15px;
+  margin-bottom:15px;
 }
 
-header {
-  padding: 20px;
-  text-align: center;
-  font-size: 26px;
-  font-weight: bold;
+.elite-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-.container {
-  padding: 20px;
+button{
+  background:#ffd600;
+  border:none;
+  padding:10px 15px;
+  border-radius:10px;
+  font-weight:bold;
 }
 
-.card {
-  background: #fff;
-  color: #000;
-  border-radius: 14px;
-  padding: 15px;
-  margin-bottom: 15px;
+select{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
 }
 
-.elite {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.address{
+  background:#eee;
+  color:#000;
+  padding:10px;
+  border-radius:8px;
+  margin-top:10px;
+  word-break:break-all;
 }
 
-button {
-  background: #ffd600;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
+/* bottom menu */
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  display:flex;
+  justify-content:space-around;
+  padding:8px 0;
 }
-
-.hidden {
-  display: none;
+.nav div{
+  color:#000;
+  font-size:12px;
+  text-align:center;
 }
-
-.select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-.address {
-  background: #eee;
-  color: #000;
-  padding: 10px;
-  border-radius: 8px;
-  word-break: break-all;
-  margin-top: 10px;
+.nav button{
+  background:none;
+  border:none;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -72,77 +87,106 @@ button {
 
 <header>NEXTRICH</header>
 
-<div class="container" id="main">
-
-  <div class="card elite">
-    <div>
-      <b>ELITE 1</b><br>
-      Депозит: 10 USDT<br>
-      Доход: 3 USDT / день
-    </div>
-    <button onclick="goPay()">Активировать</button>
+<!-- ДОМ -->
+<div id="home" class="page active">
+  <div class="card">
+    <b>Добро пожаловать в NEXTRICH</b><br>
+    Инвестиционная платформа
   </div>
-
-  <div class="card elite">
-    <div>
-      <b>ELITE 2</b><br>
-      Депозит: 50 USDT<br>
-      Доход: 16 USDT / день
-    </div>
-    <button onclick="goPay()">Активировать</button>
-  </div>
-
-  <div class="card elite">
-    <div>
-      <b>ELITE 3</b><br>
-      Депозит: 200 USDT<br>
-      Доход: 68 USDT / день
-    </div>
-    <button onclick="goPay()">Активировать</button>
-  </div>
-
 </div>
 
-<!-- СТРАНИЦА ПОПОЛНЕНИЯ -->
-<div class="container hidden" id="pay">
+<!-- ЗАДАЧИ -->
+<div id="tasks" class="page">
+  <div class="card">Задачи появятся позже</div>
+</div>
 
+<!-- КОМАНДА -->
+<div id="team" class="page">
+  <div class="card">Ваша команда</div>
+</div>
+
+<!-- ELITE -->
+<div id="elite" class="page">
+  <div class="card elite-row">
+    <div>
+      <b>ELITE 1</b><br>
+      10 USDT → 3 USDT / день
+    </div>
+    <button onclick="openPay()">Активировать</button>
+  </div>
+
+  <div class="card elite-row">
+    <div>
+      <b>ELITE 2</b><br>
+      50 USDT → 16 USDT / день
+    </div>
+    <button onclick="openPay()">Активировать</button>
+  </div>
+
+  <div class="card elite-row">
+    <div>
+      <b>ELITE 3</b><br>
+      200 USDT → 68 USDT / день
+    </div>
+    <button onclick="openPay()">Активировать</button>
+  </div>
+</div>
+
+<!-- ПОПОЛНЕНИЕ -->
+<div id="pay" class="page">
   <div class="card">
-    <b>Выберите сеть</b>
+    <b>Пополнение</b>
 
-    <select class="select" onchange="showAddress(this.value)">
-      <option value="">— выбрать —</option>
+    <select onchange="showAddr(this.value)">
+      <option value="">Выберите сеть</option>
       <option value="polygon">USDT Polygon</option>
       <option value="erc20">USDT ERC20</option>
       <option value="trc20">USDT TRC20</option>
       <option value="ltc">LTC</option>
     </select>
 
-    <div id="addr" class="address hidden"></div>
+    <div id="addr" class="address" style="display:none"></div>
 
     <button style="margin-top:15px;width:100%">Я оплатил</button>
   </div>
+</div>
 
+<!-- МНЕ -->
+<div id="me" class="page">
+  <div class="card">
+    Профиль пользователя
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button onclick="show('home')">Дом</button>
+  <button onclick="show('tasks')">Задачи</button>
+  <button onclick="show('team')">Команда</button>
+  <button onclick="show('elite')">ELITE</button>
+  <button onclick="show('me')">Мне</button>
 </div>
 
 <script>
-function goPay() {
-  document.getElementById('main').classList.add('hidden');
-  document.getElementById('pay').classList.remove('hidden');
+function show(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
-function showAddress(net) {
-  const addr = document.getElementById('addr');
-  addr.classList.remove('hidden');
+function openPay(){
+  show('pay');
+}
 
-  if(net === 'polygon' || net === 'erc20') {
-    addr.innerText = '0x386a41769648b8daca0c63271dc533ea787d67ba';
-  }
-  if(net === 'trc20') {
-    addr.innerText = 'TRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu';
-  }
-  if(net === 'ltc') {
-    addr.innerText = 'Lf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1';
-  }
+function showAddr(v){
+  const a=document.getElementById('addr');
+  a.style.display='block';
+
+  if(v==='polygon'||v==='erc20')
+    a.innerText='0x386a41769648b8daca0c63271dc533ea787d67ba';
+  if(v==='trc20')
+    a.innerText='TRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu';
+  if(v==='ltc')
+    a.innerText='Lf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1';
 }
 </script>
 
