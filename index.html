@@ -4,174 +4,170 @@
 <meta charset="UTF-8">
 <title>NEXTRICH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
 <style>
-body{margin:0;font-family:Arial;background:#0b1020;color:#fff;overflow:hidden}
-header{padding:15px;text-align:center;background:#10183a;font-size:22px}
-.card{background:#141a32;margin:12px;padding:15px;border-radius:14px}
-input,select,button{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:none}
-button{background:#ffd000;font-weight:bold}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#ffd000}
-nav div{flex:1;text-align:center;padding:12px;font-weight:bold}
-.admin{display:none}
-a{color:#6fd3ff}
-.snow{position:fixed;top:-10px;color:white;font-size:18px;animation:fall linear infinite}
-@keyframes fall{to{transform:translateY(110vh)}}
+body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff}
+header{padding:12px;text-align:center;font-weight:bold;font-size:22px;background:#111}
+.page{padding:15px}
+.card{background:#151a2d;border-radius:12px;padding:15px;margin-bottom:12px}
+button{padding:10px 14px;border:none;border-radius:8px;background:#3b82f6;color:#fff;font-weight:bold}
+input{width:100%;padding:10px;border-radius:8px;border:none;margin:6px 0}
+nav{position:fixed;bottom:0;left:0;right:0;background:#111;display:flex}
+nav div{flex:1;text-align:center;padding:10px;font-size:14px}
+.hidden{display:none}
+.admin{border:2px dashed #f59e0b;padding:12px;border-radius:10px}
+.snow{position:fixed;top:-10px;color:white;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(100vh)}}
+.santa{position:fixed;top:60px;right:10px;font-size:40px}
 </style>
 </head>
 
 <body>
 
-<header>🎄 NEXTRICH ❄️</header>
+<header>NEXTRICH</header>
 
-<div class="card">
-<b>Пользователь:</b> <span id="user"></span><br>
-<b>ELITE:</b> <span id="elite"></span><br>
-<b>Баланс:</b> <span id="balance">0</span> USDT
+<div id="auth" class="page">
+  <div class="card">
+    <h3>Вход / Регистрация</h3>
+    <input id="login" placeholder="Логин">
+    <input id="pass" placeholder="Пароль">
+    <button onclick="auth()">Войти</button>
+  </div>
 </div>
 
-<div class="card admin" id="admin">
-<h3>👑 Админка</h3>
+<div id="home" class="page hidden"></div>
+<div id="elitePage" class="page hidden"></div>
+<div id="tasksPage" class="page hidden"></div>
+<div id="mePage" class="page hidden"></div>
+<div id="supportPage" class="page hidden"></div>
 
-<input id="targetUser" placeholder="Логин пользователя">
-<input id="changeAmount" type="number" placeholder="Сколько изменить баланс">
-<button onclick="changeBalance()">Изменить баланс</button>
-
-<hr>
-
-<input id="taskTitle" placeholder="Название задания">
-<input id="taskLink" placeholder="YouTube ссылка">
-<select id="taskElite">
-<option value="1">ELITE 1</option>
-<option value="2">ELITE 2</option>
-<option value="3">ELITE 3</option>
-<option value="4">ELITE 4</option>
-</select>
-<input id="taskReward" type="number" placeholder="Награда">
-<button onclick="addTask()">Добавить задание</button>
-</div>
-
-<div class="card">
-<h3>📋 Задания</h3>
-<div id="tasks">Пока нет задач</div>
-</div>
-
-<div class="card">
-<h3>🆘 Support</h3>
-<a href="https://t.me/your_support_username" target="_blank">Написать в Telegram</a>
-</div>
-
-<nav>
-<div>Дом</div>
-<div>ELITE</div>
-<div>Задачи</div>
-<div>Мне</div>
-<div>Support</div>
+<nav class="hidden" id="nav">
+  <div onclick="show('home')">Дом</div>
+  <div onclick="show('elitePage')">ELITE</div>
+  <div onclick="show('tasksPage')">Задачи</div>
+  <div onclick="show('mePage')">Мне</div>
+  <div onclick="show('supportPage')">Support</div>
 </nav>
 
+<div class="santa">🎅💰</div>
+
 <script>
-// ❄️ СНЕЖИНКИ
-for(let i=0;i<40;i++){
- let s=document.createElement("div");
- s.className="snow";
- s.innerHTML="❄️";
- s.style.left=Math.random()*100+"vw";
- s.style.animationDuration=3+Math.random()*5+"s";
+/* ❄️ СНЕГ */
+for(let i=0;i<30;i++){
+ let s=document.createElement('div');
+ s.className='snow';
+ s.innerHTML='❄️';
+ s.style.left=Math.random()*100+'vw';
+ s.style.animationDuration=5+Math.random()*5+'s';
+ s.style.fontSize=10+Math.random()*20+'px';
  document.body.appendChild(s);
 }
 
-// 🔥 FIREBASE (ЗАМЕНИ!)
-firebase.initializeApp({
- apiKey: "API_KEY",
- authDomain: "PROJECT.firebaseapp.com",
- projectId: "PROJECT"
-});
-const db=firebase.firestore();
+/* ДАННЫЕ */
+let users = JSON.parse(localStorage.getItem('users')||'{}');
+let tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
+let current = null;
 
-// ⚙️ АВТОВХОД (ДЛЯ ТЕСТА)
-let username=localStorage.getItem("user");
-if(!username){
- username=prompt("Введите логин");
- localStorage.setItem("user",username);
+function save(){
+ localStorage.setItem('users',JSON.stringify(users));
+ localStorage.setItem('tasks',JSON.stringify(tasks));
 }
-document.getElementById("user").innerText=username;
 
-const isAdmin=username==="admin";
-if(isAdmin) document.getElementById("admin").style.display="block";
+/* АВТОРИЗАЦИЯ */
+function auth(){
+ let l=login.value,p=pass.value;
+ if(!users[l]) users[l]={pass:p,balance:0,elite:0};
+ if(users[l].pass!==p) return alert('Неверный пароль');
+ current=l;
+ document.getElementById('auth').classList.add('hidden');
+ document.getElementById('nav').classList.remove('hidden');
+ show('home');
+ render();
+}
 
-// 🔹 ЗАГРУЗКА ПОЛЬЗОВАТЕЛЯ
-const userRef=db.collection("users").doc(username);
-userRef.get().then(d=>{
- if(!d.exists){
-  userRef.set({elite:1,balance:0});
- }
-});
-
-// 🔄 ОБНОВЛЕНИЕ ДАННЫХ
-userRef.onSnapshot(d=>{
- document.getElementById("elite").innerText=d.data().elite;
- document.getElementById("balance").innerText=d.data().balance;
-});
-
-// 👑 ИЗМЕНИТЬ БАЛАНС
-function changeBalance(){
- const u=targetUser.value;
- const amt=Number(changeAmount.value);
- db.collection("users").doc(u).get().then(d=>{
-  if(!d.exists){alert("Пользователь не найден");return;}
-  db.collection("users").doc(u).update({
-   balance:d.data().balance+amt
-  });
-  alert("Баланс изменён");
+/* ПЕРЕКЛЮЧЕНИЕ */
+function show(id){
+ ['home','elitePage','tasksPage','mePage','supportPage'].forEach(p=>{
+  document.getElementById(p).classList.add('hidden')
  });
+ document.getElementById(id).classList.remove('hidden');
+ render();
 }
 
-// 🧾 ДОБАВИТЬ ЗАДАНИЕ
-const limits={1:3,2:10,3:68,4:150};
-function addTask(){
- const elite=Number(taskElite.value);
- const reward=Number(taskReward.value);
- if(reward>limits[elite]){alert("Слишком большая награда");return;}
- db.collection("tasks").add({
-  title:taskTitle.value,
-  link:taskLink.value,
-  reward,
-  elite
+/* ОТРИСОВКА */
+function render(){
+ let u=users[current];
+
+ home.innerHTML=`
+ <div class="card">
+  <b>Пользователь:</b> ${current}<br>
+  <b>ELITE:</b> ${u.elite}<br>
+  <b>Баланс:</b> ${u.balance} USDT
+ </div>`;
+
+ elitePage.innerHTML='';
+ [
+  [1,3],[2,16],[3,68],[4,216]
+ ].forEach(e=>{
+  elitePage.innerHTML+=`
+  <div class="card">
+   <h3>ELITE ${e[0]}</h3>
+   Доход: ${e[1]} USDT / день
+   <button onclick="setElite(${e[0]})">Активировать</button>
+  </div>`;
  });
- alert("Задание добавлено");
-}
 
-// 📋 ЗАДАНИЯ ДЛЯ ПОЛЬЗОВАТЕЛЯ
-userRef.get().then(u=>{
- const e=u.data().elite;
- db.collection("tasks").where("elite","<=",e)
- .onSnapshot(s=>{
-  const box=document.getElementById("tasks");
-  box.innerHTML="";
-  if(s.empty){box.innerText="Пока нет задач";return;}
-  s.forEach(doc=>{
-   const t=doc.data();
-   box.innerHTML+=`
-   <div class="card">
-   <b>${t.title}</b><br>
-   <a href="${t.link}" target="_blank">Открыть</a><br>
+ tasksPage.innerHTML='';
+ tasks.forEach((t,i)=>{
+  tasksPage.innerHTML+=`
+  <div class="card">
+   <a href="${t.link}" target="_blank">${t.link}</a><br>
    Награда: ${t.reward} USDT
-   <button onclick="complete(${t.reward})">Выполнено</button>
-   </div>`;
-  });
+   <button onclick="doneTask(${i})">Завершить</button>
+  </div>`;
  });
-});
 
-// ✅ ВЫПОЛНЕНИЕ
-function complete(reward){
- userRef.get().then(d=>{
-  userRef.update({balance:d.data().balance+reward});
-  alert("Начислено "+reward+" USDT");
- });
+ mePage.innerHTML='';
+ if(current==='admin'){
+  mePage.innerHTML=`
+  <div class="admin">
+   <h3>АДМИНКА</h3>
+   <input id="u" placeholder="Пользователь">
+   <input id="b" placeholder="Баланс">
+   <button onclick="setBalance()">Изменить баланс</button>
+   <hr>
+   <input id="tl" placeholder="YouTube ссылка">
+   <input id="tr" placeholder="Награда">
+   <button onclick="addTask()">Добавить задание</button>
+  </div>`;
+ }
+
+ supportPage.innerHTML=`
+ <div class="card">
+  <h3>Поддержка</h3>
+  <a href="https://t.me/your_support_username" target="_blank">Telegram</a>
+ </div>`;
+}
+
+/* ФУНКЦИИ */
+function setElite(l){
+ users[current].elite=l;
+ save();render();
+}
+
+function setBalance(){
+ users[u.value].balance=Number(b.value);
+ save();render();
+}
+
+function addTask(){
+ tasks.push({link:tl.value,reward:Number(tr.value)});
+ save();render();
+}
+
+function doneTask(i){
+ users[current].balance+=tasks[i].reward;
+ tasks.splice(i,1);
+ save();render();
 }
 </script>
 
