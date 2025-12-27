@@ -5,39 +5,43 @@
 <title>NEXTRICH — Вход</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff}
-.card{max-width:360px;margin:60px auto;background:#111;padding:20px;border-radius:12px}
-input,button{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:0}
-button{background:#4f7cff;color:#fff}
+body{margin:0;background:#0f1115;color:#fff;font-family:Arial}
+.box{max-width:360px;margin:80px auto;background:#1c1f2a;padding:20px;border-radius:14px}
+h2{text-align:center}
+input,button{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:none}
+button{background:#4f7cff;color:#fff;font-size:16px}
+small{opacity:.7;display:block;text-align:center}
 </style>
 </head>
 <body>
 
-<div class="card">
-<h2>NEXTRICH</h2>
-
-<input id="u" placeholder="Логин">
-<input id="p" type="password" placeholder="Пароль">
-
-<button onclick="login()">Войти / Регистрация</button>
+<div class="box">
+  <h2>Вход</h2>
+  <input id="login" placeholder="Логин">
+  <input id="pass" type="password" placeholder="Пароль">
+  <button onclick="enter()">Войти / Регистрация</button>
+  <small>Если аккаунта нет — он создастся автоматически</small>
 </div>
 
 <script>
-function login(){
-  const u = document.getElementById('u').value;
-  const p = document.getElementById('p').value;
-  if(!u || !p) return alert('Введите данные');
+function enter(){
+  if(!login.value || !pass.value){
+    alert('Введите логин и пароль'); return;
+  }
 
-  const user = {
-    u,
-    balance: 0,
-    elite: 'ELITE 0',
-    ref: Math.random().toString(36).slice(2),
-    tasksDone: []
-  };
+  let users = JSON.parse(localStorage.getItem('users') || '{}');
 
-  localStorage.setItem('user', JSON.stringify(user));
-  location.href='app.html';
+  if(!users[login.value]){
+    users[login.value] = {
+      u: login.value,
+      balance: 0,
+      elite: 0
+    };
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+
+  localStorage.setItem('user', JSON.stringify(users[login.value]));
+  location.href = 'app.html';
 }
 </script>
 
