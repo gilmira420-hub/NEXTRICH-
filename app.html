@@ -7,8 +7,8 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#0f1115;color:#fff}
-h3{margin-top:0}
-.page{display:none;padding:14px 14px 80px}
+h3{margin:0 0 8px}
+.page{display:none;padding:14px 14px 86px}
 .card{background:#1c1f2a;padding:14px;border-radius:12px;margin-bottom:12px}
 .menu{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:#151820;padding:10px 0}
 .menu div{font-size:12px;opacity:.6;cursor:pointer}
@@ -17,7 +17,6 @@ button{width:100%;padding:12px;border:none;border-radius:10px;background:#4f7cff
 input,select{width:100%;padding:10px;border-radius:8px;border:none;margin-bottom:8px}
 small{opacity:.7}
 .admin{display:none}
-.badge{display:inline-block;padding:4px 8px;border-radius:8px;background:#2a2f3f;margin-left:6px}
 </style>
 </head>
 <body>
@@ -62,8 +61,6 @@ small{opacity:.7}
 <!-- ELITE -->
 <div id="elite" class="page">
   <h3>ELITE пакеты</h3>
-
-  <!-- 1–10 -->
   <div class="card"><b>ELITE 1</b><br>Депозит: 10 USDT<br>Доход: 3 USDT/день<br><br><button onclick="buyElite(1,10)">Активировать</button></div>
   <div class="card"><b>ELITE 2</b><br>Депозит: 50 USDT<br>Доход: 16 USDT/день<br><br><button onclick="buyElite(2,50)">Активировать</button></div>
   <div class="card"><b>ELITE 3</b><br>Депозит: 200 USDT<br>Доход: 68 USDT/день<br><br><button onclick="buyElite(3,200)">Активировать</button></div>
@@ -84,7 +81,21 @@ small{opacity:.7}
     <p><b>USDT (TRC20)</b><br>TRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu</p>
     <p><b>USDT (ERC20)</b><br>0x386a41769648b8daca0c63271dc533ea787d67ba</p>
     <p><b>LTC</b><br>Lf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1</p>
-    <small>После оплаты дождитесь ручного подтверждения.</small>
+    <small>После оплаты отправьте заявку ниже.</small>
+  </div>
+
+  <div class="card">
+    <h3>Я оплатил</h3>
+    <select id="pNet">
+      <option>USDT Polygon</option>
+      <option>USDT TRC20</option>
+      <option>USDT ERC20</option>
+      <option>LTC</option>
+    </select>
+    <input id="pSum" type="number" placeholder="Сумма">
+    <input id="pTx" placeholder="TxID или комментарий">
+    <button onclick="paid()">Отправить заявку</button>
+    <small>Заявка отправляется на ручную проверку.</small>
   </div>
 
   <div class="card">
@@ -98,11 +109,19 @@ small{opacity:.7}
     </select>
     <input id="wAddr" placeholder="Адрес">
     <button onclick="requestWithdraw()">Создать заявку</button>
-    <div id="wInfo"><small>Заявки обрабатываются вручную.</small></div>
+    <small>Обработка вручную.</small>
   </div>
 
   <div class="card">
     <button onclick="logout()">Выйти</button>
+  </div>
+</div>
+
+<!-- ADMIN PAYS -->
+<div id="adminPays" class="page admin">
+  <div class="card">
+    <h3>Админ — заявки на пополнение</h3>
+    <div id="payList"><small>Нет заявок</small></div>
   </div>
 </div>
 
@@ -116,7 +135,7 @@ small{opacity:.7}
 </div>
 
 <script>
-/* AUTH GUARD */
+/* AUTH */
 let user = JSON.parse(localStorage.getItem('user'));
 if(!user){ location.href='index.html'; }
 
@@ -147,7 +166,6 @@ function buyElite(level, price){
 /* TASKS */
 let tasks = JSON.parse(localStorage.getItem('tasks')||'[]');
 renderTasks();
-
 function renderTasks(){
   const box = document.getElementById('taskList');
   box.innerHTML = '';
@@ -156,25 +174,58 @@ function renderTasks(){
     const d=document.createElement('div');
     d.className='card';
     d.innerHTML = `<a href="${t.link}" target="_blank">Перейти</a>
-    <p>Награда: $${t.reward}</p>
-    <button onclick="doneTask(${i})">Выполнено</button>`;
+      <p>Награда: $${t.reward}</p>
+      <button onclick="doneTask(${i})">Выполнено</button>`;
     box.appendChild(d);
   });
 }
-
 function addTask(){
   tasks.push({link:tLink.value, reward:Number(tReward.value)});
   localStorage.setItem('tasks', JSON.stringify(tasks));
   tLink.value=''; tReward.value='';
   renderTasks(); alert('Задача добавлена');
 }
-
 function doneTask(i){
   user.balance = (user.balance||0) + Number(tasks[i].reward);
   localStorage.setItem('user', JSON.stringify(user));
   uBal.textContent = user.balance.toFixed(2);
   alert('Зачислено');
 }
+
+/* PAYS */
+let pays = JSON.parse(localStorage.getItem('pays')||'[]');
+function paid(){
+  if(!pSum.value) return alert('Введите сумму');
+  pays.push({
+    user: user.u, net: pNet.value, sum: Number(pSum.value),
+    tx: pTx.value, time: new Date().toLocaleString(), status:'wait'
+  });
+  localStorage.setItem('pays', JSON.stringify(pays));
+  pSum.value=''; pTx.value='';
+  alert('Заявка отправлена');
+  renderPays();
+}
+function renderPays(){
+  if(user.u!=='admin') return;
+  const box = document.getElementById('payList');
+  box.innerHTML='';
+  if(!pays.length){ box.innerHTML='<small>Нет заявок</small>'; return; }
+  pays.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className='card';
+    d.innerHTML = `<b>${p.user}</b><br>${p.net} — $${p.sum}<br>${p.tx||''}
+      <br><small>${p.time}</small><br><br>
+      <button onclick="approvePay(${i})">Подтвердить</button>`;
+    box.appendChild(d);
+  });
+}
+function approvePay(i){
+  pays[i].status='ok';
+  localStorage.setItem('pays', JSON.stringify(pays));
+  alert('Подтверждено (баланс можно начислить вручную или добавить авто)');
+  renderPays();
+}
+if(user.u==='admin'){ renderPays(); }
 
 /* WITHDRAW */
 function requestWithdraw(){
