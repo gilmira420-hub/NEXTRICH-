@@ -1,35 +1,65 @@
-<!DOCTYPE html>
+
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <title>NEXTRICH</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #0b0f1a;
-      color: white;
+      color: #fff;
     }
+
     header {
-      background: linear-gradient(90deg, #7f00ff, #00d4ff);
+      background: linear-gradient(90deg, #6a00ff, #00c3ff);
       padding: 20px;
       text-align: center;
     }
+
     .container {
-      padding: 20px;
-      max-width: 900px;
+      max-width: 1000px;
       margin: auto;
+      padding: 20px;
     }
-    .card {
-      background: #141a2b;
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .elite {
+      background: #13182b;
       border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
     }
-    .card h3 {
-      margin-top: 0;
-      color: #00d4ff;
+
+    .elite h3 {
+      margin: 0 0 10px 0;
+      color: #00eaff;
+    }
+
+    .elite p {
+      margin: 5px 0;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #00eaff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #00bcd4;
     }
   </style>
 </head>
@@ -38,28 +68,23 @@
 
 <header>
   <h1>NEXTRICH</h1>
-  <p>ELITE платформа</p>
+  <p>ELITE инвестиционные пакеты</p>
 </header>
 
 <div class="container">
-  <div class="card">
-    <h3>ELITE 1</h3>
-    <p>Депозит: 10 USDT</p>
-    <p>Доход в день: 3 USDT</p>
-  </div>
+  <h2>ELITE пакеты</h2>
 
-  <div class="card">
-    <h3>ELITE 2</h3>
-    <p>Депозит: 50 USDT</p>
-    <p>Доход в день: 16 USDT</p>
-  </div>
+  <div class="elite"><h3>ELITE 1</h3><p>Депозит: 10 USDT</p><p>Доход: 3 USDT / день</p><p>Доходность: 30%</p><button>Активировать</button></div>
+  <div class="elite"><h3>ELITE 2</h3><p>Депозит: 50 USDT</p><p>Доход: 16 USDT / день</p><p>Доходность: 32%</p><button>Активировать</button></div>
+  <div class="elite"><h3>ELITE 3</h3><p>Депозит: 200 USDT</p><p>Доход: 68 USDT / день</p><p>Доходность: 34%</p><button>Активировать</button></div>
+  <div class="elite"><h3>ELITE 4</h3><p>Депозит: 600 USDT</p><p>Доход: 216 USDT / день</p><p>Доходность: 36%</p><button>Активировать</button></div>
+  <div class="elite"><h3>ELITE 5</h3><p>Депозит: 1200 USDT</p><p>Доход: 480 USDT / день</p><p>Доходность: 40%</p><button>Активировать</button></div>
+  <div class="elite"><h3>ELITE 6</h3><p>Депозит: 2400 USDT</p><p>Доход: 1104 USDT / день</p><p>Доходность: 46%</p><button>Активировать</button></div>
+  <div class="elite"><h3>ELITE 7</h3><p>Депозит: 4800 USDT</p><p>Доход: 2496 USDT / день</p><p>Доходность: 52%</p><button>Активировать</button></div>
+  <div class="elite"><h3>ELITE 8</h3><p>Депозит: 9600 USDT</p><p>Доход: 5760 USDT / день</p><p>Доходность: 60%</p><button>Активировать</button></div>
+  <div class="elite"><h3>ELITE 9</h3><p>Депозит: 19200 USDT</p><p>Доход: 13440 USDT / день</p><p>Доходность: 70%</p><button>Активировать</button></div>
+  <div class="elite"><h3>ELITE 10</h3><p>Депозит: 38400 USDT</p><p>Доход: 32640 USDT / день</p><p>Доходность: 85%</p><button>Активировать</button></div>
 
-  <div class="card">
-    <h3>ELITE 3</h3>
-    <p>Депозит: 200 USDT</p>
-    <p>Доход в день: 68 USDT</p>
-  </div>
 </div>
 
 </body>
-</html>
