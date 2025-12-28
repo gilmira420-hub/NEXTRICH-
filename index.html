@@ -3,23 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <title>NEXTRICH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{margin:0;font-family:Arial;background:#0b1020;color:#fff}
-.hidden{display:none}
-header{text-align:center;padding:16px;font-size:22px;background:#0f1533}
-section{padding:16px 16px 90px}
-.card{background:#151c3d;border-radius:14px;padding:14px;margin-bottom:12px}
-input,select{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:none}
-button{padding:10px 14px;border-radius:12px;border:none;font-weight:bold;cursor:pointer}
-.btn{background:#3b7cff;color:#fff}
-.btn2{background:#1a245a;color:#9fc2ff}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0f1533}
-nav button{flex:1;background:none;color:#fff;border:none;padding:14px}
-.elite{border:1px solid #3b7cff}
-a{color:#7cc0ff;text-decoration:none}
-.support{position:fixed;right:14px;bottom:78px;background:#25D366;
-color:#000;padding:12px 14px;border-radius:50px;font-weight:bold}
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#0e1630;
+color:#fff;
+}
+header{
+background:#1a2b6d;
+padding:15px;
+text-align:center;
+font-weight:bold;
+font-size:20px;
+}
+.card{
+background:#1b2550;
+margin:15px;
+padding:15px;
+border-radius:14px;
+}
+button{
+background:#4caf50;
+border:none;
+padding:10px 15px;
+color:#fff;
+border-radius:10px;
+margin-top:10px;
+cursor:pointer;
+width:100%;
+}
+button.gray{background:#555;}
+nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:#1a2b6d;
+display:flex;
+justify-content:space-around;
+padding:12px 0;
+}
+nav div{cursor:pointer;}
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:none;
+}
+.support{
+position:fixed;
+bottom:75px;
+right:15px;
+background:#3ddc84;
+color:#000;
+padding:12px 18px;
+border-radius:20px;
+font-weight:bold;
+}
+.hidden{display:none;}
 </style>
 </head>
 
@@ -27,154 +71,112 @@ color:#000;padding:12px 14px;border-radius:50px;font-weight:bold}
 
 <header>🎄 NEXTRICH 💎</header>
 
-<a class="support" href="https://t.me/Elite_rich7" target="_blank">💬 Поддержка</a>
+<!-- LOGIN -->
+<div id="login" class="card">
+<h3>Вход</h3>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Пароль">
+<button onclick="login()">Войти</button>
+</div>
 
-<section id="auth">
-  <div class="card">
-    <h3>Вход / Регистрация</h3>
-    <input id="email" placeholder="Email">
-    <input id="pass" type="password" placeholder="Пароль">
-    <button class="btn" onclick="login()">Войти</button>
-  </div>
-</section>
+<!-- APP -->
+<div id="app" class="hidden">
 
-<section id="home" class="hidden">
-  <div class="card">
-    Привет, <b id="uEmail"></b><br>
-    Баланс: <b><span id="bal">0</span> USDT</b>
-  </div>
-</section>
+<!-- HOME -->
+<div id="home" class="card">
+<h3>Привет, <span id="userEmail"></span></h3>
+<p>Баланс: <b id="balance">0</b> USDT</p>
+<button class="gray" onclick="alert('Вывод средств временно недоступен')">Вывод средств</button>
+</div>
 
-<section id="elite" class="hidden"></section>
+<!-- ELITE -->
+<div id="elite" class="hidden">
+<div class="card">
+<b>ELITE 1</b><br>
+Цена: 10 USDT<br>
+Доход/день: 3 USDT
+<button onclick="buy(10)">Активировать</button>
+</div>
 
-<section id="tasks" class="hidden">
-  <div class="card">
-    <h3>Задания</h3>
-    <div id="taskList"></div>
-  </div>
-</section>
+<div class="card">
+<b>ELITE 2</b><br>
+Цена: 50 USDT<br>
+Доход/день: 16 USDT
+<button onclick="buy(50)">Активировать</button>
+</div>
 
-<section id="wallet" class="hidden">
-  <div class="card">
-    Баланс: <b><span id="bal2">0</span> USDT</b><br><br>
-    <button class="btn2" onclick="withdraw()">Вывод средств</button>
-  </div>
-</section>
+<div class="card">
+<b>ELITE 3</b><br>
+Цена: 200 USDT<br>
+Доход/день: 68 USDT
+<button onclick="buy(200)">Активировать</button>
+</div>
 
-<section id="admin" class="hidden">
-  <div class="card">
-    <h3>Админ — добавить задание</h3>
-    <input id="ytLink" placeholder="YouTube ссылка">
-    <input id="ytReward" type="number" placeholder="Награда USDT">
-    <button class="btn" onclick="addTask()">Добавить</button>
-  </div>
-</section>
+<div class="card">
+<b>ELITE 4</b><br>
+Цена: 400 USDT<br>
+Доход/день: 250 USDT
+<button onclick="buy(400)">Активировать</button>
+</div>
+</div>
+
+<!-- TASKS -->
+<div id="tasks" class="card hidden">
+<h3>Задания</h3>
+<p>Нет заданий</p>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="card hidden">
+<h3>Профиль</h3>
+<p>Email: <span id="profileEmail"></span></p>
+<button onclick="logout()">Выйти</button>
+</div>
+
+</div>
+
+<div class="support">💬 Поддержка</div>
 
 <nav id="nav" class="hidden">
-  <button onclick="show('home')">Дом</button>
-  <button onclick="show('elite')">ELITE</button>
-  <button onclick="show('tasks')">Задачи</button>
-  <button onclick="show('wallet')">Мне</button>
+<div onclick="show('home')">Дом</div>
+<div onclick="show('elite')">ELITE</div>
+<div onclick="show('tasks')">Задачи</div>
+<div onclick="show('profile')">Мне</div>
 </nav>
 
 <script>
-const ADMIN="admin@nextrich.com";
-const ADMIN_PASS="admin1";
-let current=null;
-
-const ELITES=[
-[1,10,3],[2,50,16],[3,200,68],[4,600,216]
-];
-
-const users=()=>JSON.parse(localStorage.users||"{}");
-const saveUsers=u=>localStorage.users=JSON.stringify(u);
-const tasks=()=>JSON.parse(localStorage.tasks||"[]");
-const saveTasks=t=>localStorage.tasks=JSON.stringify(t);
+let balance = 0;
 
 function login(){
-  const e=email.value,p=pass.value;
-  if(!e||!p)return alert("Введите данные");
-  let u=users();
-  if(!u[e])u[e]={pass:p,balance:0};
-  if(u[e].pass!==p)return alert("Неверный пароль");
-  current=e; localStorage.current=e;
-  start();
-}
+const email = document.getElementById('email').value;
+const pass = document.getElementById('password').value;
 
-function start(){
-  auth.classList.add("hidden");
-  nav.classList.remove("hidden");
-  uEmail.textContent=current;
-  if(current===ADMIN)admin.classList.remove("hidden");
-  renderElite(); renderTasks(); show("home");
+if(email==="admin@nextrich.com" && pass==="admin123"){
+document.getElementById('login').classList.add('hidden');
+document.getElementById('app').classList.remove('hidden');
+document.getElementById('nav').classList.remove('hidden');
+document.getElementById('userEmail').innerText=email;
+document.getElementById('profileEmail').innerText=email;
+}else{
+alert("Неверный логин или пароль");
+}
 }
 
 function show(id){
-  document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-  updateBal();
-}
-
-function updateBal(){
-  let u=users();
-  bal.textContent=bal2.textContent=u[current].balance;
-}
-
-function renderElite(){
-  elite.innerHTML="";
-  ELITES.forEach(e=>{
-    elite.innerHTML+=`
-    <div class="card elite">
-      <b>ELITE ${e[0]}</b><br>
-      Цена: ${e[1]} USDT<br>
-      Доход/день: ${e[2]} USDT<br><br>
-      <button class="btn2" onclick="buy(${e[1]})">Активировать</button>
-    </div>`;
-  });
+['home','elite','tasks','profile'].forEach(e=>{
+document.getElementById(e).classList.add('hidden');
+});
+document.getElementById(id).classList.remove('hidden');
 }
 
 function buy(price){
-  alert("Для активации пополните баланс и напишите в поддержку.");
-  window.open("https://t.me/Elite_rich7","_blank");
+alert("Недостаточно средств. Баланс: "+balance+" USDT");
 }
 
-function addTask(){
-  let t=tasks();
-  t.push({link:ytLink.value,reward:Number(ytReward.value)});
-  saveTasks(t);
-  renderTasks();
-}
-
-function renderTasks(){
-  let t=tasks();
-  taskList.innerHTML="";
-  if(!t.length){taskList.innerHTML="Нет заданий";return;}
-  t.forEach((x,i)=>{
-    taskList.innerHTML+=`
-    <div class="card">
-      <a href="${x.link}" target="_blank">Открыть</a><br>
-      Награда: ${x.reward} USDT<br>
-      <button class="btn" onclick="complete(${i})">Выполнил</button>
-    </div>`;
-  });
-}
-
-function complete(i){
-  let u=users();
-  u[current].balance+=tasks()[i].reward;
-  saveUsers(u);
-  updateBal();
-}
-
-function withdraw(){
-  alert("Для вывода напишите в поддержку");
-  window.open("https://t.me/Elite_rich7","_blank");
-}
-
-if(localStorage.current){
-  current=localStorage.current;
-  start();
+function logout(){
+location.reload();
 }
 </script>
+
 </body>
 </html>
