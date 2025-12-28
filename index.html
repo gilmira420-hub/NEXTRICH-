@@ -8,7 +8,7 @@
 body{margin:0;font-family:Arial;background:#0b1020;color:#fff}
 .hidden{display:none}
 header{text-align:center;padding:14px;font-size:22px;background:#0f1533}
-section{padding:16px 16px 110px}
+section{padding:16px 16px 100px}
 .card{background:#151c3d;border-radius:14px;padding:14px;margin-bottom:12px}
 input,select{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:none}
 button{padding:10px 14px;border-radius:12px;border:none;font-weight:bold;cursor:pointer}
@@ -18,21 +18,17 @@ nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0f1533}
 nav button{flex:1;background:none;color:#fff;border:none;padding:14px}
 .elite{border:1px solid #3b7cff}
 a{color:#7cc0ff;text-decoration:none}
-.support{position:fixed;right:14px;bottom:80px;background:#25D366;color:#000;
-padding:12px 14px;border-radius:50px;font-weight:bold}
-.snow{pointer-events:none;position:fixed;top:0;left:0;width:100%;height:100%;
-background:url('https://i.imgur.com/MN2QK9S.png') repeat;animation:snow 20s linear infinite;opacity:.25}
-@keyframes snow{from{background-position:0 0}to{background-position:0 1000px}}
+.support{position:fixed;right:14px;bottom:78px;background:#25D366;
+color:#000;padding:12px 14px;border-radius:50px;font-weight:bold}
 </style>
 </head>
 
 <body>
-<div class="snow"></div>
-<header>🎄 NEXTRICH 💎</header>
-<a class="support" href="https://t.me/Elite_rich7" target="_blank">💬 Support</a>
 
-<!-- AUTH -->
-<section id="authBlock">
+<header>🎄 NEXTRICH 💎</header>
+<a class="support" href="https://t.me/Elite_rich7" target="_blank">💬 Поддержка</a>
+
+<section id="auth">
   <div class="card">
     <h3>Вход / Регистрация</h3>
     <input id="email" placeholder="Email">
@@ -41,18 +37,15 @@ background:url('https://i.imgur.com/MN2QK9S.png') repeat;animation:snow 20s line
   </div>
 </section>
 
-<!-- HOME -->
 <section id="home" class="hidden">
   <div class="card">
-    Email: <b id="uEmail"></b><br>
+    Привет, <b id="uEmail"></b><br>
     Баланс: <b><span id="bal">0</span> USDT</b>
   </div>
 </section>
 
-<!-- ELITE -->
 <section id="elite" class="hidden"></section>
 
-<!-- TASKS -->
 <section id="tasks" class="hidden">
   <div class="card">
     <h3>YouTube задания</h3>
@@ -60,187 +53,105 @@ background:url('https://i.imgur.com/MN2QK9S.png') repeat;animation:snow 20s line
   </div>
 </section>
 
-<!-- WALLET -->
-<section id="wallet" class="hidden">
-  <div class="card">
-    <b>Баланс:</b> <span id="bal2">0</span> USDT<br><br>
-    <button class="btn2" onclick="withdraw()">Вывод средств</button>
-  </div>
-</section>
-
-<!-- TOPUP -->
-<section id="topup" class="hidden">
-  <div class="card">
-    <h3>Пополнение</h3>
-    <p>Отправь средства и напиши в поддержку:</p>
-    <b>USDT TRC20:</b><br>TRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu<br><br>
-    <b>USDT ERC20:</b><br>0x386a41769648b8daca0c63271dc533ea787d67ba<br><br>
-    <b>USDT Polygon:</b><br>0x386a41769648b8daca0c63271dc533ea787d67ba<br><br>
-    <b>LTC:</b><br>Lf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1<br><br>
-    <button class="btn" onclick="openSupport()">Я оплатил</button>
-  </div>
-</section>
-
-<!-- ADMIN -->
 <section id="admin" class="hidden">
   <div class="card">
-    <h3>Админ — YouTube задание</h3>
-    <input id="ytLink" placeholder="YouTube ссылка">
-    <select id="ytType">
-      <option>Подписка</option>
-      <option>Лайк</option>
-      <option>Комментарий</option>
-    </select>
-    <input id="ytReward" type="number" placeholder="Награда USDT">
-    <button class="btn" onclick="addTask()">Добавить задание</button>
-  </div>
-  <div class="card">
-    <h3>Изменить баланс</h3>
-    <input id="bEmail" placeholder="Email пользователя">
-    <input id="bAmount" type="number" placeholder="Баланс">
-    <button class="btn2" onclick="setBalance()">Изменить</button>
+    <h3>Админ — задание</h3>
+    <input id="tLink" placeholder="YouTube ссылка">
+    <input id="tReward" type="number" placeholder="Награда USDT">
+    <button class="btn" onclick="addTask()">Добавить</button>
   </div>
 </section>
 
-<!-- NAV -->
 <nav id="nav" class="hidden">
   <button onclick="show('home')">Дом</button>
   <button onclick="show('elite')">ELITE</button>
   <button onclick="show('tasks')">Задачи</button>
-  <button onclick="show('wallet')">Мне</button>
-  <button id="adminBtn" class="hidden" onclick="show('admin')">Админ</button>
 </nav>
 
-<!-- Firebase -->
+<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-// ================== НАСТРОЙКА FIREBASE ==================
-// ❗ ВСТАВЬ СВОЙ РЕАЛЬНЫЙ CONFIG ИЗ FIREBASE CONSOLE
-firebase.initializeApp({
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://PASTE_YOUR_PROJECT.firebaseio.com",
-  projectId: "PASTE_YOUR_PROJECT"
-});
-// =======================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyAZASnWfaygzD08v6dKOSrLPbR6GBQGSxw",
+  authDomain: "nextrich-6fec6.firebaseapp.com",
+  databaseURL: "https://nextrich-6fec6-default-rtdb.firebaseio.com",
+  projectId: "nextrich-6fec6",
+  storageBucket: "nextrich-6fec6.appspot.com",
+  messagingSenderId: "908180914494",
+  appId: "1:908180914494:web:24640a5943ae00f1d9ec6f"
+};
 
-const fbAuth = firebase.auth();
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 const db = firebase.database();
-const ADMIN_EMAIL = "admin@nextrich.com";
 
-const ELITES=[
-[1,10,3],[2,50,16],[3,200,68],[4,600,216],[5,1200,480],
-[6,2400,1104],[7,4800,2496],[8,9600,5760],[9,19200,13440],[10,38400,32640]
-];
+const ADMIN = "admin@nextrich.com";
+let currentUser = null;
 
-// -------- AUTH --------
 function login(){
-  const e=email.value.trim(), p=pass.value;
-  if(!e||!p){alert("Введите email и пароль");return;}
-  fbAuth.signInWithEmailAndPassword(e,p)
-    .catch(()=>fbAuth.createUserWithEmailAndPassword(e,p));
+  auth.signInWithEmailAndPassword(email.value, pass.value)
+  .catch(()=>auth.createUserWithEmailAndPassword(email.value, pass.value))
+  .then(res=>{
+    currentUser = res.user;
+    start();
+  });
 }
 
-fbAuth.onAuthStateChanged(u=>{
-  if(!u) return;
-  authBlock.classList.add("hidden");
+function start(){
+  authSection(false);
+  uEmail.textContent = currentUser.email;
   nav.classList.remove("hidden");
-  uEmail.textContent=u.email;
-  if(u.email===ADMIN_EMAIL) adminBtn.classList.remove("hidden");
-  show('home');
+  if(currentUser.email === ADMIN) admin.classList.remove("hidden");
+  loadElite(); loadTasks(); show("home");
+}
 
-  const uref=db.ref("users/"+u.uid);
-  uref.once("value",s=>{
-    if(!s.exists()) uref.set({email:u.email,balance:0});
-  });
-  uref.child("balance").on("value",s=>{
-    bal.textContent = bal2.textContent = s.val()||0;
-  });
+function authSection(show){
+  auth.classList.toggle("hidden", !show);
+}
 
-  renderElite();
-  loadTasks();
-});
-
-// -------- UI --------
 function show(id){
   document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
 }
 
-// -------- ELITE --------
-function renderElite(){
-  elite.innerHTML="";
-  ELITES.forEach(e=>{
-    elite.innerHTML+=`
-    <div class="card elite">
-      <b>ELITE ${e[0]}</b><br>
-      Депозит: ${e[1]} USDT<br>
-      Доход/день: ${e[2]} USDT<br><br>
-      <button class="btn2" onclick="activateElite(${e[1]})">Активировать</button>
-    </div>`;
-  });
+function loadElite(){
+  elite.innerHTML = `
+  <div class="card elite">
+    <b>ELITE 3</b><br>Цена: 200 USDT<br>Доход: 68 USDT/день<br><br>
+    <button class="btn2" onclick="pay()">Активировать</button>
+  </div>`;
 }
-function activateElite(){ show('topup'); }
 
-// -------- TASKS --------
+function pay(){
+  alert("Для активации пополните баланс и напишите в поддержку");
+  window.open("https://t.me/Elite_rich7");
+}
+
 function addTask(){
-  if(!ytLink.value || !ytReward.value){alert("Заполните поля");return;}
   db.ref("tasks").push({
-    link:ytLink.value,
-    type:ytType.value,
-    reward:Number(ytReward.value)
+    link: tLink.value,
+    reward: Number(tReward.value)
   });
-  ytLink.value=""; ytReward.value="";
   alert("Задание добавлено");
 }
 
 function loadTasks(){
-  db.ref("tasks").on("value",s=>{
+  db.ref("tasks").on("value", snap=>{
     taskList.innerHTML="";
-    if(!s.exists()){taskList.innerHTML="Заданий нет";return;}
-    s.forEach(t=>{
-      const x=t.val();
+    snap.forEach(s=>{
+      let t=s.val();
       taskList.innerHTML+=`
       <div class="card">
-        <b>${x.type}</b><br>
-        <a href="${x.link}" target="_blank">Открыть YouTube</a><br>
-        Награда: ${x.reward} USDT<br><br>
-        <button class="btn" onclick="complete(${x.reward})">Я выполнил</button>
+        <a href="${t.link}" target="_blank">Открыть</a><br>
+        Награда: ${t.reward} USDT
       </div>`;
     });
   });
 }
-
-function complete(reward){
-  const u=fbAuth.currentUser;
-  db.ref("users/"+u.uid+"/balance").transaction(b=>(b||0)+reward);
-  alert("Награда начислена");
-}
-
-// -------- ADMIN BALANCE --------
-function setBalance(){
-  if(!bEmail.value){alert("Введите email");return;}
-  db.ref("users").orderByChild("email").equalTo(bEmail.value)
-  .once("value",s=>{
-    if(!s.exists()){alert("Пользователь не найден");return;}
-    s.forEach(u=>{
-      db.ref("users/"+u.key+"/balance").set(Number(bAmount.value||0));
-    });
-    alert("Баланс изменён");
-  });
-}
-
-// -------- WITHDRAW / SUPPORT --------
-function withdraw(){
-  alert("Для вывода напишите в поддержку");
-  openSupport();
-}
-function openSupport(){
-  window.open("https://t.me/Elite_rich7","_blank");
-}
 </script>
+
 </body>
 </html>
