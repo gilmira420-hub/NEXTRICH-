@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>NEXTRICH — New Year</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{--bg:#0b1020;--card:#141a33;--pri:#4da3ff;--txt:#eaf1ff}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:radial-gradient(900px 400px at 50% -200px,#1a235a,transparent),var(--bg);color:var(--txt)}
+.hidden{display:none}
+header{position:sticky;top:0;z-index:5;background:#0f1533;padding:14px;text-align:center;font-size:22px;font-weight:800}
+section{padding:16px 16px 100px}
+.card{background:linear-gradient(180deg,#1a214a,#12183a);border:1px solid #24307a;border-radius:16px;padding:16px;margin-bottom:12px}
+input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #2a3aa8;background:#0e1433;color:#fff;margin:6px 0}
+.btn{background:linear-gradient(135deg,#3b7cff,#6bd1ff);border:none;color:#001;padding:12px 14px;border-radius:14px;font-weight:800;cursor:pointer}
+.btn.ghost{background:transparent;color:#9fb6ff;border:1px dashed #2f4cff}
+.btn.warn{background:linear-gradient(135deg,#ffb86b,#ff7b7b)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.elite{border:1px solid #2b4cff}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;gap:6px;padding:10px;background:linear-gradient(180deg,transparent,#070b1f 30%);backdrop-filter:blur(6px)}
+nav button{flex:1;padding:12px;border-radius:14px;border:1px solid #2a3aa8;background:#0e1433;color:#cfe0ff;font-weight:700}
+nav button.active{background:#1a2cff}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#0e1433;border:1px solid #2a3aa8}
+a{color:#7cc0ff;text-decoration:none}
+.support{position:fixed;right:14px;bottom:86px;background:#25D366;color:#001;padding:12px 14px;border-radius:50px;font-weight:900}
+.snow{position:fixed;top:-10px;color:#fff;font-size:10px;animation:fall linear infinite;opacity:.8;z-index:1}
+@keyframes fall{to{transform:translateY(110vh)}}
+</style>
+</head>
+<body>
+
+<header>🎄 NEXTRICH 💎</header>
+<a class="support" href="https://t.me/Elite_rich7" target="_blank">💬 Поддержка</a>
+
+<section id="auth">
+  <div class="card">
+    <h3>Вход / Регистрация</h3>
+    <input id="email" placeholder="Email">
+    <input id="pass" type="password" placeholder="Пароль">
+    <button class="btn" onclick="login()">Войти / Создать</button>
+  </div>
+</section>
+
+<section id="home" class="hidden">
+  <div class="card">
+    Привет, <b id="userEmail"></b> 👋<br>
+    Баланс: <span class="badge"><b id="bal">0</b> USDT</span>
+  </div>
+</section>
+
+<section id="elite" class="hidden">
+  <h3>ELITE планы</h3>
+  <div class="grid" id="eliteGrid"></div>
+</section>
+
+<section id="tasks" class="hidden">
+  <div class="card">
+    <h3>YouTube-задачи</h3>
+    <div id="taskList"><small>Нет активных задач</small></div>
+  </div>
+</section>
+
+<section id="wallet" class="hidden">
+  <div class="card">
+    <h3>Кошелёк</h3>
+    Баланс: <b id="bal2">0</b> USDT<br><br>
+    <button class="btn warn" onclick="withdraw()">Запросить вывод</button>
+  </div>
+</section>
+
+<section id="admin" class="hidden">
+  <div class="card">
+    <h3>Админ — YouTube-задача</h3>
+    <input id="ytLink" placeholder="YouTube ссылка">
+    <select id="ytType">
+      <option>Подписка</option>
+      <option>Лайк</option>
+      <option>Комментарий</option>
+    </select>
+    <input id="ytReward" type="number" placeholder="Награда USDT">
+    <button class="btn ghost" onclick="addTask()">Добавить задание</button>
+  </div>
+  <div class="card">
+    <h3>Админ — Баланс</h3>
+    <input id="aEmail" placeholder="Email пользователя">
+    <input id="aBal" type="number" placeholder="Новый баланс USDT">
+    <button class="btn" onclick="setBalance()">Изменить баланс</button>
+  </div>
+</section>
+
+<nav id="nav" class="hidden">
+  <button onclick="show('home')">Дом</button>
+  <button onclick="show('elite')">ELITE</button>
+  <button onclick="show('tasks')">Задачи</button>
+  <button onclick="show('wallet')">Мне</button>
+</nav>
+
+<script>
+// снег
+for(let i=0;i<50;i++){const s=document.createElement('div');s.className='snow';s.textContent='❄';s.style.left=Math.random()*100+'vw';s.style.animationDuration=5+Math.random()*10+'s';s.style.fontSize=8+Math.random()*12+'px';document.body.appendChild(s);}
+
+// данные
+const ADMIN_EMAIL="admin@nextrich.com", ADMIN_PASS="admin1";
+const SUPPORT="https://t.me/Elite_rich7";
+const ELITES=[
+ {n:1,d:10,day:3},{n:2,d:50,day:16},{n:3,d:200,day:68},
+ {n:4,d:600,day:216},{n:5,d:1200,day:480},
+ {n:6,d:2400,day:1104},{n:7,d:4800,day:2496},
+ {n:8,d:9600,day:5760},{n:9,d:19200,day:13440},
+ {n:10,d:38400,day:32640},
+];
+let current=null;
+
+// helpers
+const U=()=>JSON.parse(localStorage.users||"{}");
+const S=(o)=>localStorage.users=JSON.stringify(o);
+const T=()=>JSON.parse(localStorage.tasks||"[]");
+const ST=(o)=>localStorage.tasks=JSON.stringify(o);
+
+// auth
+function login(){
+  const e=email.value.trim(), p=pass.value;
+  if(!e||!p) return alert("Введите данные");
+  let u=U();
+  if(!u[e]) u[e]={pass:p,balance:0};
+  if(u[e].pass!==p) return alert("Неверный пароль");
+  S(u); current=e; localStorage.current=e; init();
+}
+
+// ui
+function init(){
+  auth.classList.add('hidden');
+  nav.classList.remove('hidden');
+  userEmail.textContent=current;
+  if(current===ADMIN_EMAIL) admin.classList.remove('hidden');
+  renderElite(); renderTasks(); show('home');
+}
+function show(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  const map={home:0,elite:1,tasks:2,wallet:3};
+  nav.children[map[id]]?.classList.add('active');
+  updateBal();
+}
+function updateBal(){
+  const u=U()[current]; bal.textContent=u.balance; bal2.textContent=u.balance;
+}
+
+// elite
+function renderElite(){
+  eliteGrid.innerHTML='';
+  ELITES.forEach(e=>{
+    const d=document.createElement('div');
+    d.className='card elite';
+    d.innerHTML=`<b>ELITE ${e.n}</b><br>Депозит: ${e.d} USDT<br>Доход/день: ${e.day} USDT<br><br>
+    <button class="btn" onclick="pay(${e.d})">Активировать</button>`;
+    eliteGrid.appendChild(d);
+  });
+}
+function pay(amount){
+  alert(`Для активации ELITE пополните ${amount} USDT и напишите в поддержку.\n\nUSDT TRC20:\nTRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu\n\nUSDT ERC20 / Polygon:\n0x386a41769648b8daca0c63271dc533ea787d67ba\n\nLTC:\nLf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1`);
+  window.open(SUPPORT,'_blank');
+}
+
+// tasks
+function addTask(){
+  if(current!==ADMIN_EMAIL) return;
+  const arr=T();
+  arr.push({link:ytLink.value,type:ytType.value,reward:Number(ytReward.value||0)});
+  ST(arr); renderTasks(); alert("Задание добавлено");
+}
+function renderTasks(){
+  const list=T(); taskList.innerHTML='';
+  if(!list.length){taskList.innerHTML='<small>Нет активных задач</small>';return;}
+  list.forEach((t,i)=>{
+    const d=document.createElement('div'); d.className='card';
+    d.innerHTML=`<b>${t.type}</b><br><a href="${t.link}" target="_blank">Открыть YouTube</a><br>
+    Награда: ${t.reward} USDT<br><br>
+    <button class="btn ghost" onclick="complete(${i})">Я выполнил</button>`;
+    taskList.appendChild(d);
+  });
+}
+function complete(i){
+  const u=U(); u[current].balance+=Number(T()[i].reward); S(u);
+  alert("Награда начислена (демо)"); updateBal();
+}
+
+// wallet
+function withdraw(){
+  alert("Заявка на вывод отправлена в поддержку (Telegram).");
+  window.open(SUPPORT,'_blank');
+}
+
+// admin balance
+function setBalance(){
+  if(current!==ADMIN_EMAIL) return;
+  const u=U(); if(!u[aEmail.value]) return alert("Нет пользователя");
+  u[aEmail.value].balance=Number(aBal.value||0); S(u);
+  alert("Баланс изменён");
+}
+
+// auto-login
+if(localStorage.current){ current=localStorage.current; init(); }
+</script>
+</body>
+</html>
