@@ -2,157 +2,243 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>NEXTRICH</title>
+<title>NEXTRICH — New Year Edition</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff}
+:root{
+  --bg:#0b1020; --card:#141a33; --pri:#4da3ff; --acc:#7cffc4; --txt:#eaf1ff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial;background:radial-gradient(1200px 600px at 50% -200px,#1a235a,transparent),var(--bg);color:var(--txt)}
 .hidden{display:none}
-header{padding:15px;text-align:center;font-size:24px;font-weight:bold;background:#111}
-nav{position:fixed;bottom:0;width:100%;display:flex;background:#111}
-nav button{flex:1;padding:15px;background:none;border:none;color:#fff;font-size:14px}
-nav button:hover{background:#1e2a5a}
-section{padding:20px 15px 80px}
-.card{background:#141a2e;padding:15px;border-radius:10px;margin-bottom:10px}
-.btn{background:#2f6bff;border:none;color:#fff;padding:10px 15px;border-radius:8px}
-input{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:none}
-.elite{border:1px solid #2f6bff}
+header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#0f1533,#0b1020);padding:14px 16px;text-align:center;font-weight:800;letter-spacing:.5px}
+header span{color:var(--acc)}
+section{padding:16px 16px 92px}
+.card{background:linear-gradient(180deg,#1a214a,#12183a);border:1px solid #24307a;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+h2,h3{margin:.2em 0 .6em}
+input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #2a3aa8;background:#0e1433;color:#fff;margin:6px 0}
+.btn{background:linear-gradient(135deg,#3b7cff,#6bd1ff);border:none;color:#001; padding:12px 14px;border-radius:14px;font-weight:800;cursor:pointer}
+.btn.ghost{background:transparent;color:#9fb6ff;border:1px dashed #2f4cff}
+.btn.warn{background:linear-gradient(135deg,#ffb86b,#ff7b7b)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.elite{border:1px solid #2b4cff}
+.elite b{color:#9fd2ff}
+small{opacity:.8}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;gap:6px;padding:10px;background:linear-gradient(180deg,transparent,#070b1f 30%);backdrop-filter:blur(6px)}
+nav button{flex:1;padding:12px;border-radius:14px;border:1px solid #2a3aa8;background:#0e1433;color:#cfe0ff;font-weight:700}
+nav button.active{background:#1a2cff}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#0e1433;border:1px solid #2a3aa8}
+.footer-note{opacity:.7;text-align:center}
+
+/* Snow */
+.snow{position:fixed;top:-10px;color:#fff;font-size:10px;animation:fall linear infinite;opacity:.8;z-index:1}
+@keyframes fall{to{transform:translateY(110vh)}}
 </style>
 </head>
 
 <body>
+<header>🎄 NEXTRICH <span>New Year</span> 💎</header>
 
-<header>NEXTRICH 💎</header>
-
+<!-- AUTH -->
 <section id="auth">
   <div class="card">
     <h3>Вход / Регистрация</h3>
     <input id="email" placeholder="Email">
     <input id="pass" type="password" placeholder="Пароль">
     <button class="btn" onclick="login()">Войти / Зарегистрироваться</button>
+    <small>Демо-версия. Реальные платежи подключаются на сервере.</small>
   </div>
 </section>
 
+<!-- HOME -->
 <section id="home" class="hidden">
-  <div class="card">Добро пожаловать, <span id="userEmail"></span></div>
-</section>
-
-<section id="elite" class="hidden"></section>
-
-<section id="balance" class="hidden">
   <div class="card">
-    Баланс: <b><span id="bal">0</span> USDT</b><br><br>
-    <button class="btn" onclick="withdraw()">Вывод средств</button>
+    Привет, <b id="userEmail"></b> 👋<br>
+    Баланс: <span class="badge"><b id="bal">0</b> USDT</span>
   </div>
 </section>
 
-<section id="tasks" class="hidden">
-  <div class="card">Заданий пока нет</div>
+<!-- ELITE -->
+<section id="elite" class="hidden">
+  <h2>ELITE планы</h2>
+  <div class="grid" id="eliteGrid"></div>
 </section>
 
+<!-- TASKS -->
+<section id="tasks" class="hidden">
+  <div class="card">
+    <h3>Задачи</h3>
+    <div id="taskList"><small>Нет активных задач</small></div>
+  </div>
+</section>
+
+<!-- TEAM -->
 <section id="team" class="hidden">
   <div class="card">
-    Ваша реферальная ссылка:<br>
+    <h3>Команда</h3>
+    Ваша ссылка:<br>
     <small id="ref"></small>
   </div>
 </section>
 
-<section id="admin" class="hidden">
+<!-- WALLET -->
+<section id="wallet" class="hidden">
   <div class="card">
-    <h3>Админка</h3>
-    <input id="adminEmail" placeholder="Email пользователя">
-    <input id="adminAmount" placeholder="Баланс">
-    <button class="btn" onclick="setBalance()">Изменить баланс</button>
+    <h3>Кошелёк</h3>
+    Баланс: <b id="bal2">0</b> USDT<br><br>
+    <button class="btn warn" onclick="withdraw()">Запросить вывод</button>
+    <p class="footer-note">Вывод — заявка в поддержку (Telegram)</p>
   </div>
 </section>
 
-<nav class="hidden" id="nav">
+<!-- ADMIN -->
+<section id="admin" class="hidden">
+  <div class="card">
+    <h3>Админка</h3>
+    <input id="aEmail" placeholder="Email пользователя">
+    <input id="aBal" type="number" placeholder="Новый баланс USDT">
+    <button class="btn" onclick="setBalance()">Изменить баланс</button>
+    <hr style="border-color:#26307a">
+    <input id="tText" placeholder="Текст задания (YouTube ссылка)">
+    <input id="tReward" type="number" placeholder="Награда USDT">
+    <button class="btn ghost" onclick="addTask()">Добавить задание</button>
+  </div>
+</section>
+
+<nav id="nav" class="hidden">
   <button onclick="show('home')">Дом</button>
   <button onclick="show('elite')">ELITE</button>
   <button onclick="show('tasks')">Задачи</button>
   <button onclick="show('team')">Команда</button>
-  <button onclick="show('balance')">Мне</button>
+  <button onclick="show('wallet')">Мне</button>
 </nav>
 
 <script>
-let user=null;
+// ---- Snow
+for(let i=0;i<50;i++){
+  const s=document.createElement('div');
+  s.className='snow'; s.textContent='❄';
+  s.style.left=Math.random()*100+'vw';
+  s.style.animationDuration=5+Math.random()*10+'s';
+  s.style.fontSize=8+Math.random()*12+'px';
+  document.body.appendChild(s);
+}
 
-const elites=[
-[1,10,3],[2,50,16],[3,200,68],[4,600,216],[5,1200,480],
-[6,2400,1104],[7,4800,2496],[8,9600,5760],[9,19200,13440],[10,38400,32640]
+// ---- Data
+const ADMIN_EMAIL="admin@nextrich.com", ADMIN_PASS="admin1";
+const ELITES=[
+ {n:1,d:10,day:3},{n:2,d:50,day:16},{n:3,d:200,day:68},
+ {n:4,d:600,day:216},{n:5,d:1200,day:480},
+ {n:6,d:2400,day:1104},{n:7,d:4800,day:2496},
+ {n:8,d:9600,day:5760},{n:9,d:19200,day:13440},
+ {n:10,d:38400,day:32640},
 ];
+let current=null;
 
+// ---- Helpers
+const U=()=>JSON.parse(localStorage.users||"{}");
+const S=(o)=>localStorage.users=JSON.stringify(o);
+const T=()=>JSON.parse(localStorage.tasks||"[]");
+const ST=(o)=>localStorage.tasks=JSON.stringify(o);
+
+// ---- Auth
 function login(){
-  const e=email.value,p=pass.value;
-  if(!e||!p)return alert("Заполните данные");
-  let users=JSON.parse(localStorage.users||"{}");
-  if(!users[e])users[e]={pass:p,balance:0,elite:0};
-  if(users[e].pass!==p)return alert("Неверный пароль");
-  user=e;
-  localStorage.current=e;
-  showApp();
+  const e=email.value.trim(), p=pass.value;
+  if(!e||!p) return alert("Введите данные");
+  let u=U();
+  if(!u[e]) u[e]={pass:p,balance:0,elite:0};
+  if(u[e].pass!==p) return alert("Неверный пароль");
+  S(u); current=e; localStorage.current=e; init();
 }
 
-function showApp(){
-  auth.classList.add("hidden");
-  nav.classList.remove("hidden");
-  userEmail.innerText=user;
-  ref.innerText=location.href+"?ref="+btoa(user);
-  renderElite();
-  show("home");
-  if(user==="admin@nextrich.com")admin.classList.remove("hidden");
+// ---- UI
+function init(){
+  auth.classList.add('hidden');
+  nav.classList.remove('hidden');
+  userEmail.textContent=current;
+  ref.textContent=location.href.split('?')[0]+'?ref='+btoa(current);
+  if(current===ADMIN_EMAIL) admin.classList.remove('hidden');
+  renderElite(); renderTasks(); show('home');
 }
-
 function show(id){
-  document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
+  document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  const map={home:0,elite:1,tasks:2,team:3,wallet:4};
+  nav.children[map[id]]?.classList.add('active');
   updateBal();
 }
-
-function renderElite(){
-  elite.innerHTML="";
-  elites.forEach(e=>{
-    elite.innerHTML+=`
-    <div class="card elite">
-      <b>ELITE ${e[0]}</b><br>
-      Депозит: ${e[1]} USDT<br>
-      Доход/день: ${e[2]} USDT<br><br>
-      <button class="btn" onclick="pay(${e[1]})">Активировать</button>
-    </div>`;
-  });
+function updateBal(){
+  const u=U()[current]; bal.textContent=u.balance; bal2.textContent=u.balance;
 }
 
+// ---- ELITE (платно → пополнение)
+function renderElite(){
+  eliteGrid.innerHTML='';
+  ELITES.forEach(e=>{
+    const d=document.createElement('div');
+    d.className='card elite';
+    d.innerHTML=`<b>ELITE ${e.n}</b><br>
+      Депозит: ${e.d} USDT<br>
+      Доход/день: ${e.day} USDT<br><br>
+      <button class="btn" onclick="pay(${e.d})">Активировать</button>`;
+    eliteGrid.appendChild(d);
+  });
+}
 function pay(amount){
   alert(
-"Для активации пополните баланс:\n\n"+
-"USDT TRC20:\nTRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu\n\n"+
-"USDT ERC20 / Polygon:\n0x386a41769648b8daca0c63271dc533ea787d67ba\n\n"+
-"LTC:\nLf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1\n\n"+
-"После оплаты напишите в поддержку."
+`Для активации ELITE пополните баланс на ${amount} USDT:
+
+USDT TRC20:
+TRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu
+
+USDT ERC20 / Polygon:
+0x386a41769648b8daca0c63271dc533ea787d67ba
+
+LTC:
+Lf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1
+
+После оплаты напишите в поддержку (Telegram).`
   );
 }
 
-function updateBal(){
-  let users=JSON.parse(localStorage.users||"{}");
-  bal.innerText=users[user]?.balance||0;
+// ---- Tasks
+function renderTasks(){
+  const list=T(); taskList.innerHTML='';
+  if(!list.length){ taskList.innerHTML='<small>Нет активных задач</small>'; return;}
+  list.forEach((t,i)=>{
+    const d=document.createElement('div'); d.className='card';
+    d.innerHTML=`${t.text}<br><small>Награда: ${t.reward} USDT</small>
+    <br><button class="btn ghost" onclick="complete(${i})">Выполнено</button>`;
+    taskList.appendChild(d);
+  });
+}
+function complete(i){
+  const u=U(); u[current].balance+=Number(T()[i].reward); S(u);
+  alert("Награда начислена (демо)");
+  updateBal();
 }
 
+// ---- Wallet
 function withdraw(){
-  alert("Заявка на вывод отправлена в поддержку (Telegram)");
+  alert("Заявка на вывод отправлена в поддержку (Telegram).");
 }
 
+// ---- Admin
 function setBalance(){
-  let users=JSON.parse(localStorage.users||"{}");
-  if(!users[adminEmail.value])return alert("Нет пользователя");
-  users[adminEmail.value].balance=Number(adminAmount.value);
-  localStorage.users=JSON.stringify(users);
+  if(current!==ADMIN_EMAIL) return;
+  const u=U(); if(!u[aEmail.value]) return alert("Нет пользователя");
+  u[aEmail.value].balance=Number(aBal.value||0); S(u);
   alert("Баланс изменён");
 }
-
-if(localStorage.current){
-  user=localStorage.current;
-  showApp();
+function addTask(){
+  if(current!==ADMIN_EMAIL) return;
+  const arr=T(); arr.push({text:tText.value,reward:Number(tReward.value||0)});
+  ST(arr); renderTasks(); alert("Задание добавлено");
 }
-</script>
 
+// ---- Auto-login
+if(localStorage.current){ current=localStorage.current; init(); }
+</script>
 </body>
 </html>
