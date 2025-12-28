@@ -8,9 +8,9 @@
 body{margin:0;font-family:Arial;background:#0b1020;color:#fff}
 .hidden{display:none}
 header{text-align:center;padding:14px;font-size:22px;background:#0f1533}
-section{padding:16px 16px 100px}
+section{padding:16px 16px 110px}
 .card{background:#151c3d;border-radius:14px;padding:14px;margin-bottom:12px}
-input{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:none}
+input,select{width:100%;padding:10px;margin:6px 0;border-radius:10px;border:none}
 button{padding:10px 14px;border-radius:12px;border:none;font-weight:bold;cursor:pointer}
 .btn{background:#3b7cff;color:#fff}
 .btn2{background:#1a245a;color:#9fc2ff}
@@ -20,20 +20,22 @@ nav button{flex:1;background:none;color:#fff;border:none;padding:14px}
 a{color:#7cc0ff;text-decoration:none}
 .support{position:fixed;right:14px;bottom:78px;background:#25D366;
 color:#000;padding:12px 14px;border-radius:50px;font-weight:bold}
+.snow{pointer-events:none;position:fixed;inset:0}
 </style>
 </head>
-
 <body>
 
 <header>🎄 NEXTRICH 💎</header>
-<a class="support" href="https://t.me/Elite_rich7" target="_blank">💬 Support</a>
+<a class="support" href="https://t.me/Elite_rich7" target="_blank">💬 Поддержка</a>
+
+<canvas class="snow"></canvas>
 
 <section id="auth">
   <div class="card">
     <h3>Вход / Регистрация</h3>
     <input id="email" placeholder="Email">
     <input id="pass" type="password" placeholder="Пароль">
-    <button class="btn" onclick="login()">Войти</button>
+    <button class="btn" onclick="login()">Войти / Зарегистрироваться</button>
   </div>
 </section>
 
@@ -41,7 +43,7 @@ color:#000;padding:12px 14px;border-radius:50px;font-weight:bold}
   <div class="card">
     Email: <b id="uEmail"></b><br>
     Баланс: <b><span id="bal">0</span> USDT</b><br>
-    ELITE: <b><span id="eliteLvl">Нет</span></b>
+    ELITE: <b id="eliteLvl">Нет</b>
   </div>
 </section>
 
@@ -49,22 +51,35 @@ color:#000;padding:12px 14px;border-radius:50px;font-weight:bold}
 
 <section id="tasks" class="hidden">
   <div class="card">
-    <h3>YouTube задания</h3>
+    <h3>Задания</h3>
     <div id="taskList"></div>
+  </div>
+</section>
+
+<section id="wallet" class="hidden">
+  <div class="card">
+    <h3>Пополнение</h3>
+    <p>USDT TRC20: <b>TRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu</b></p>
+    <p>USDT ERC20: <b>0x386a41769648b8daca0c63271dc533ea787d67ba</b></p>
+    <p>USDT Polygon: <b>0x386a41769648b8daca0c63271dc533ea787d67ba</b></p>
+    <p>LTC: <b>Lf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1</b></p>
+  </div>
+  <div class="card">
+    <h3>Вывод</h3>
+    <button class="btn2" onclick="withdraw()">Создать заявку</button>
   </div>
 </section>
 
 <section id="admin" class="hidden">
   <div class="card">
     <h3>Админ — Задание</h3>
-    <input id="taskLink" placeholder="YouTube ссылка">
-    <input id="taskReward" type="number" placeholder="Награда USDT">
+    <input id="tLink" placeholder="YouTube ссылка">
+    <input id="tReward" type="number" placeholder="Награда USDT">
     <button class="btn" onclick="addTask()">Добавить</button>
   </div>
-
   <div class="card">
-    <h3>Изменить баланс</h3>
-    <input id="bEmail" placeholder="Email">
+    <h3>Админ — Баланс</h3>
+    <input id="bEmail" placeholder="Email пользователя">
     <input id="bAmount" type="number" placeholder="Баланс">
     <button class="btn2" onclick="setBalance()">Изменить</button>
   </div>
@@ -74,120 +89,160 @@ color:#000;padding:12px 14px;border-radius:50px;font-weight:bold}
   <button onclick="show('home')">Дом</button>
   <button onclick="show('elite')">ELITE</button>
   <button onclick="show('tasks')">Задачи</button>
+  <button onclick="show('wallet')">Баланс</button>
 </nav>
 
+<!-- Firebase compat -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
-const ADMIN_EMAIL="admin@nextrich.com";
-const ADMIN_PASS="admin123";
+// ===== НАСТРОЙКИ =====
+const ADMIN_EMAIL = "admin@nextrich.com";
+const firebaseConfig = {
+  apiKey: "AIzaSyAZASnWfaygzD08v6dKOSrLPbR6GBQGSxw",
+  authDomain: "nextrich-6fec6.firebaseapp.com",
+  databaseURL: "YOUR_DATABASE_URL",
+  projectId: "nextrich-6fec6",
+  storageBucket: "nextrich-6fec6.appspot.com",
+  messagingSenderId: "908180914494",
+  appId: "1:908180914494:web:24640a5943ae00f1d9ec6f"
+};
+// =====================
 
-let current=null;
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
 
-const getUsers=()=>JSON.parse(localStorage.users||"{}");
-const saveUsers=u=>localStorage.users=JSON.stringify(u);
-const getTasks=()=>JSON.parse(localStorage.tasks||"[]");
-const saveTasks=t=>localStorage.tasks=JSON.stringify(t);
+let user=null;
 
 function login(){
   const e=email.value.trim(), p=pass.value.trim();
   if(!e||!p) return alert("Введите данные");
-
-  let u=getUsers();
-  if(!u[e]){
-    u[e]={pass:p,balance:0,elite:0};
-    saveUsers(u);
-  }
-  if(u[e].pass!==p) return alert("Неверный пароль");
-
-  current=e;
-  localStorage.current=e;
-  start();
+  auth.signInWithEmailAndPassword(e,p)
+    .catch(()=>auth.createUserWithEmailAndPassword(e,p))
+    .then(()=>start());
 }
 
 function start(){
-  auth.classList.add("hidden");
-  nav.classList.remove("hidden");
-  uEmail.textContent=current;
-  renderElite();
-  renderTasks();
-  updateBal();
-  if(current===ADMIN_EMAIL) admin.classList.remove("hidden");
-  show("home");
+  auth.onAuthStateChanged(u=>{
+    if(!u) return;
+    user=u;
+    authSection(false);
+    nav.classList.remove("hidden");
+    uEmail.textContent=u.email;
+    if(u.email===ADMIN_EMAIL) admin.classList.remove("hidden");
+    ensureUser();
+    renderElite();
+    loadTasks();
+    show("home");
+  });
 }
+
+function authSection(show){ auth.classList.toggle("hidden", !show); }
 
 function show(id){
   document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
+  updateBal();
 }
+
+function ensureUser(){
+  const ref=db.ref("users/"+uid());
+  ref.once("value").then(s=>{
+    if(!s.exists()) ref.set({balance:0,elite:0});
+  });
+}
+
+function uid(){ return user.uid; }
 
 function updateBal(){
-  let u=getUsers()[current];
-  bal.textContent=u.balance;
-  eliteLvl.textContent=u.elite?`ELITE ${u.elite}`:"Нет";
+  db.ref("users/"+uid()).once("value").then(s=>{
+    const d=s.val()||{balance:0,elite:0};
+    bal.textContent=d.balance;
+    eliteLvl.textContent=d.elite?`ELITE ${d.elite}`:"Нет";
+  });
 }
+
+const ELITES=[
+  {lvl:1,price:10,day:3},
+  {lvl:2,price:50,day:16},
+  {lvl:3,price:200,day:68},
+  {lvl:4,price:600,day:216}
+];
 
 function renderElite(){
-  elite.innerHTML=`
-  <div class="card elite">
-    <b>ELITE 3</b><br>
-    Цена: 200 USDT<br>
-    Доход: 68 USDT/день<br><br>
-    <button class="btn2" onclick="buyElite()">Активировать</button>
-  </div>`;
-}
-
-function buyElite(){
-  let u=getUsers();
-  if(u[current].balance<200)
-    return alert("Недостаточно средств. Напишите в поддержку.");
-  u[current].balance-=200;
-  u[current].elite=3;
-  saveUsers(u);
-  updateBal();
-  alert("ELITE активирован");
-}
-
-function addTask(){
-  let t=getTasks();
-  t.push({link:taskLink.value,reward:Number(taskReward.value)});
-  saveTasks(t);
-  renderTasks();
-  alert("Задание добавлено");
-}
-
-function renderTasks(){
-  let t=getTasks();
-  taskList.innerHTML="";
-  if(!t.length) return taskList.innerHTML="Заданий нет";
-  t.forEach((x,i)=>{
-    taskList.innerHTML+=`
-    <div class="card">
-      <a href="${x.link}" target="_blank">Открыть YouTube</a><br>
-      Награда: ${x.reward} USDT<br><br>
-      <button class="btn" onclick="done(${i})">Я выполнил</button>
+  elite.innerHTML="";
+  ELITES.forEach(e=>{
+    elite.innerHTML+=`
+    <div class="card elite">
+      <b>ELITE ${e.lvl}</b><br>
+      Цена: ${e.price} USDT<br>
+      Доход/день: ${e.day} USDT<br><br>
+      <button class="btn2" onclick="goPay(${e.lvl})">Активировать</button>
     </div>`;
   });
 }
 
-function done(i){
-  let u=getUsers();
-  u[current].balance+=getTasks()[i].reward;
-  saveUsers(u);
-  updateBal();
-  alert("Начислено");
+function goPay(lvl){
+  alert("Для активации пополните баланс. После оплаты админ активирует ELITE.");
+  show("wallet");
+}
+
+function addTask(){
+  db.ref("tasks").push({link:tLink.value,reward:Number(tReward.value)});
+  tLink.value=""; tReward.value="";
+  alert("Задание добавлено");
+}
+
+function loadTasks(){
+  db.ref("tasks").on("value", snap=>{
+    taskList.innerHTML="";
+    if(!snap.exists()) return taskList.innerHTML="Заданий нет";
+    snap.forEach(s=>{
+      const t=s.val();
+      taskList.innerHTML+=`
+      <div class="card">
+        <a href="${t.link}" target="_blank">Открыть YouTube</a><br>
+        Награда: ${t.reward} USDT
+      </div>`;
+    });
+  });
 }
 
 function setBalance(){
-  let u=getUsers();
-  if(!u[bEmail.value]) return alert("Нет пользователя");
-  u[bEmail.value].balance=Number(bAmount.value);
-  saveUsers(u);
-  alert("Баланс изменён");
+  const em=bEmail.value.trim(), amt=Number(bAmount.value);
+  if(!em) return alert("Email?");
+  db.ref("emailToUid/"+em).once("value").then(s=>{
+    if(!s.exists()) return alert("Пользователь войдите хотя бы раз");
+    db.ref("users/"+s.val()+"/balance").set(amt);
+    alert("Готово");
+  });
 }
 
-if(localStorage.current){
-  current=localStorage.current;
-  start();
+function withdraw(){
+  alert("Заявка создана. Напишите в поддержку.");
+  window.open("https://t.me/Elite_rich7","_blank");
 }
+
+// Связка email->uid
+auth.onAuthStateChanged(u=>{
+  if(u) db.ref("emailToUid/"+u.email).set(u.uid);
+});
+
+// старт
+start();
+</script>
+
+<script>
+// простые снежинки
+const c=document.querySelector('.snow'),x=c.getContext('2d');
+function r(){c.width=innerWidth;c.height=innerHeight}r();onresize=r;
+let s=[...Array(120)].map(()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:1+Math.random()*2,v:.5+Math.random()}));
+(function a(){x.clearRect(0,0,c.width,c.height);x.fillStyle="#fff";
+s.forEach(o=>{x.beginPath();x.arc(o.x,o.y,o.r,0,7);x.fill();o.y+=o.v;if(o.y>c.height)o.y=0});
+requestAnimationFrame(a)})();
 </script>
 
 </body>
