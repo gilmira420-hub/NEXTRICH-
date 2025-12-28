@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
@@ -5,61 +6,153 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff}
-header{padding:12px;text-align:center;font-weight:bold;font-size:22px;background:#111}
-.page{padding:15px}
-.card{background:#151a2d;border-radius:12px;padding:15px;margin-bottom:12px}
-button{padding:10px 14px;border:none;border-radius:8px;background:#3b82f6;color:#fff;font-weight:bold}
-input{width:100%;padding:10px;border-radius:8px;border:none;margin:6px 0}
-nav{position:fixed;bottom:0;left:0;right:0;background:#111;display:flex}
-nav div{flex:1;text-align:center;padding:10px;font-size:14px}
 .hidden{display:none}
-.admin{border:2px dashed #f59e0b;padding:12px;border-radius:10px}
-.snow{position:fixed;top:-10px;color:white;animation:fall linear infinite}
-@keyframes fall{to{transform:translateY(100vh)}}
-.santa{position:fixed;top:60px;right:10px;font-size:40px}
+header{padding:15px;text-align:center;font-size:24px;font-weight:bold;background:#111}
+nav{position:fixed;bottom:0;width:100%;display:flex;background:#111}
+nav button{flex:1;padding:15px;background:none;border:none;color:#fff;font-size:14px}
+nav button:hover{background:#1e2a5a}
+section{padding:20px 15px 80px}
+.card{background:#141a2e;padding:15px;border-radius:10px;margin-bottom:10px}
+.btn{background:#2f6bff;border:none;color:#fff;padding:10px 15px;border-radius:8px}
+input{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:none}
+.elite{border:1px solid #2f6bff}
 </style>
 </head>
 
 <body>
 
-<header>NEXTRICH</header>
+<header>NEXTRICH 💎</header>
 
-<div id="auth" class="page">
+<section id="auth">
   <div class="card">
     <h3>Вход / Регистрация</h3>
-    <input id="login" placeholder="Логин">
-    <input id="pass" placeholder="Пароль">
-    <button onclick="auth()">Войти</button>
+    <input id="email" placeholder="Email">
+    <input id="pass" type="password" placeholder="Пароль">
+    <button class="btn" onclick="login()">Войти / Зарегистрироваться</button>
   </div>
-</div>
+</section>
 
-<div id="home" class="page hidden"></div>
-<div id="elitePage" class="page hidden"></div>
-<div id="tasksPage" class="page hidden"></div>
-<div id="mePage" class="page hidden"></div>
-<div id="supportPage" class="page hidden"></div>
+<section id="home" class="hidden">
+  <div class="card">Добро пожаловать, <span id="userEmail"></span></div>
+</section>
+
+<section id="elite" class="hidden"></section>
+
+<section id="balance" class="hidden">
+  <div class="card">
+    Баланс: <b><span id="bal">0</span> USDT</b><br><br>
+    <button class="btn" onclick="withdraw()">Вывод средств</button>
+  </div>
+</section>
+
+<section id="tasks" class="hidden">
+  <div class="card">Заданий пока нет</div>
+</section>
+
+<section id="team" class="hidden">
+  <div class="card">
+    Ваша реферальная ссылка:<br>
+    <small id="ref"></small>
+  </div>
+</section>
+
+<section id="admin" class="hidden">
+  <div class="card">
+    <h3>Админка</h3>
+    <input id="adminEmail" placeholder="Email пользователя">
+    <input id="adminAmount" placeholder="Баланс">
+    <button class="btn" onclick="setBalance()">Изменить баланс</button>
+  </div>
+</section>
 
 <nav class="hidden" id="nav">
-  <div onclick="show('home')">Дом</div>
-  <div onclick="show('elitePage')">ELITE</div>
-  <div onclick="show('tasksPage')">Задачи</div>
-  <div onclick="show('mePage')">Мне</div>
-  <div onclick="show('supportPage')">Support</div>
+  <button onclick="show('home')">Дом</button>
+  <button onclick="show('elite')">ELITE</button>
+  <button onclick="show('tasks')">Задачи</button>
+  <button onclick="show('team')">Команда</button>
+  <button onclick="show('balance')">Мне</button>
 </nav>
 
-<div class="santa">🎅💰</div>
-
 <script>
-/* ❄️ СНЕГ */
-for(let i=0;i<30;i++){
- let s=document.createElement('div');
- s.className='snow';
- s.innerHTML='❄️';
- s.style.left=Math.random()*100+'vw';
- s.style.animationDuration=5+Math.random()*5+'s';
- s.style.fontSize=10+Math.random()*20+'px';
- document.body.appendChild(s);
+let user=null;
+
+const elites=[
+[1,10,3],[2,50,16],[3,200,68],[4,600,216],[5,1200,480],
+[6,2400,1104],[7,4800,2496],[8,9600,5760],[9,19200,13440],[10,38400,32640]
+];
+
+function login(){
+  const e=email.value,p=pass.value;
+  if(!e||!p)return alert("Заполните данные");
+  let users=JSON.parse(localStorage.users||"{}");
+  if(!users[e])users[e]={pass:p,balance:0,elite:0};
+  if(users[e].pass!==p)return alert("Неверный пароль");
+  user=e;
+  localStorage.current=e;
+  showApp();
 }
 
-/* ДАННЫЕ */
-  
+function showApp(){
+  auth.classList.add("hidden");
+  nav.classList.remove("hidden");
+  userEmail.innerText=user;
+  ref.innerText=location.href+"?ref="+btoa(user);
+  renderElite();
+  show("home");
+  if(user==="admin@nextrich.com")admin.classList.remove("hidden");
+}
+
+function show(id){
+  document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  updateBal();
+}
+
+function renderElite(){
+  elite.innerHTML="";
+  elites.forEach(e=>{
+    elite.innerHTML+=`
+    <div class="card elite">
+      <b>ELITE ${e[0]}</b><br>
+      Депозит: ${e[1]} USDT<br>
+      Доход/день: ${e[2]} USDT<br><br>
+      <button class="btn" onclick="pay(${e[1]})">Активировать</button>
+    </div>`;
+  });
+}
+
+function pay(amount){
+  alert(
+"Для активации пополните баланс:\n\n"+
+"USDT TRC20:\nTRSEFWAFve44VnGkpkYDvnDKCWXbGo3fHu\n\n"+
+"USDT ERC20 / Polygon:\n0x386a41769648b8daca0c63271dc533ea787d67ba\n\n"+
+"LTC:\nLf73TtKAVHGHuYMv5VjXbMVe67YY4ssLN1\n\n"+
+"После оплаты напишите в поддержку."
+  );
+}
+
+function updateBal(){
+  let users=JSON.parse(localStorage.users||"{}");
+  bal.innerText=users[user]?.balance||0;
+}
+
+function withdraw(){
+  alert("Заявка на вывод отправлена в поддержку (Telegram)");
+}
+
+function setBalance(){
+  let users=JSON.parse(localStorage.users||"{}");
+  if(!users[adminEmail.value])return alert("Нет пользователя");
+  users[adminEmail.value].balance=Number(adminAmount.value);
+  localStorage.users=JSON.stringify(users);
+  alert("Баланс изменён");
+}
+
+if(localStorage.current){
+  user=localStorage.current;
+  showApp();
+}
+</script>
+
+</body>
+</html>
