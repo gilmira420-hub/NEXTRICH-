@@ -16,8 +16,8 @@ body{
   background:#0c3fb8;
   padding:15px;
   text-align:center;
-  font-weight:700;
-  font-size:20px
+  font-size:20px;
+  font-weight:700
 }
 .header span{color:gold}
 .card{
@@ -99,7 +99,7 @@ body{
 
 <div class="timer">
   <p>Сброс заданий через</p>
-  <h2 id="countdown">11:28:05</h2>
+  <h2 id="countdown">00:00:00</h2>
 </div>
 
 <div class="nav">
@@ -111,17 +111,38 @@ body{
 </div>
 
 <script>
-let t=11*3600+28*60+5;
-setInterval(()=>{
-  let h=Math.floor(t/3600),
-      m=Math.floor((t%3600)/60),
-      s=t%60;
-  document.getElementById("countdown").innerText=
-    String(h).padStart(2,"0")+":"+
-    String(m).padStart(2,"0")+":"+
+/* === РЕАЛЬНЫЙ РАБОЧИЙ ТАЙМЕР (24 ЧАСА) === */
+const RESET_SECONDS = 24 * 60 * 60;
+
+// если таймера нет — создаём
+let timeLeft = localStorage.getItem("nextrich_timer");
+if (!timeLeft) {
+  timeLeft = RESET_SECONDS;
+} else {
+  timeLeft = parseInt(timeLeft);
+}
+
+function updateTimer() {
+  let h = Math.floor(timeLeft / 3600);
+  let m = Math.floor((timeLeft % 3600) / 60);
+  let s = timeLeft % 60;
+
+  document.getElementById("countdown").innerText =
+    String(h).padStart(2,"0") + ":" +
+    String(m).padStart(2,"0") + ":" +
     String(s).padStart(2,"0");
-  if(t>0)t--;
-},1000);
+
+  timeLeft--;
+
+  if (timeLeft < 0) {
+    timeLeft = RESET_SECONDS;
+  }
+
+  localStorage.setItem("nextrich_timer", timeLeft);
+}
+
+updateTimer();
+setInterval(updateTimer, 1000);
 </script>
 
 </body>
