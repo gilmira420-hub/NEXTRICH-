@@ -1,138 +1,72 @@
 <!DOCTYPE html><html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Home — Elite Investment</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELITE DIGITAL</title>
 <style>
-body{
-  margin:0;
-  background:#0b0f1f;
-  font-family:Arial,Helvetica,sans-serif;
-  color:#fff;
-}
-.app{
-  max-width:420px;
-  margin:auto;
-  min-height:100vh;
-  background:#0e132a;
-}
-.header{
-  padding:16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.logo{
-  font-weight:bold;
-  font-size:18px;
-}
-.lang{
-  background:#1c2347;
-  padding:6px 12px;
-  border-radius:20px;
-  font-size:13px;
-}
-.balance-card{
-  margin:16px;
-  background:linear-gradient(135deg,#1b2350,#0f1433);
-  border-radius:16px;
-  padding:20px;
-  text-align:center;
-}
-.balance-card span{
-  opacity:.8;
-}
-.balance{
-  font-size:32px;
-  margin-top:8px;
-  font-weight:bold;
-}
-.actions{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-  margin:16px;
-}
-.action{
-  background:#1a2045;
-  border-radius:14px;
-  padding:14px 8px;
-  text-align:center;
-  font-size:12px;
-}
-.action div{
-  width:44px;
-  height:44px;
-  margin:0 auto 8px;
-  border-radius:50%;
-  background:#f5b942;
-  color:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:bold;
-}
-.banner{
-  margin:16px;
-  border-radius:16px;
-  overflow:hidden;
-}
-.banner img{
-  width:100%;
-  display:block;
-}
-.nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#0b1028;
-  display:flex;
-  justify-content:space-around;
-  padding:10px 0;
-}
-.nav div{
-  font-size:12px;
-  opacity:.6;
-}
-.nav .active{
-  color:#f5b942;
-  opacity:1;
-}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0b0f1f;color:#fff}
+.app{max-width:420px;margin:auto;min-height:100vh;padding-bottom:70px;background:#0e132a}
+/* HEADER */
+.header{padding:16px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:bold;font-size:18px}
+.lang{background:#1c2347;padding:6px 12px;border-radius:20px;font-size:13px}
+/* BALANCE */
+.balance-card{margin:16px;background:linear-gradient(135deg,#1b2350,#0f1433);border-radius:16px;padding:20px;text-align:center}
+.balance-card span{opacity:.8}
+.balance{font-size:32px;margin-top:8px;font-weight:bold}
+/* ACTIONS */
+.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px}
+.action{background:#1a2045;border-radius:14px;padding:14px 8px;text-align:center;font-size:12px}
+.action .icon{width:44px;height:44px;margin:0 auto 8px;border-radius:50%;background:#f5b942;color:#000;display:flex;align-items:center;justify-content:center;font-weight:bold}
+/* BANNER */
+.banner{margin:16px;height:220px;border-radius:16px;background:linear-gradient(135deg,#f5b942,#ff8c00);display:flex;align-items:center;justify-content:center;color:#000;text-align:center}
+.banner h2{margin:0;font-size:22px}
+.banner p{margin:6px 0 0;font-size:14px}
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+.page h3{margin:20px}
+/* NAV */
+.nav{position:fixed;bottom:0;left:0;right:0;background:#0b1028;display:flex;justify-content:space-around;padding:10px 0}
+.nav div{font-size:12px;opacity:.6;cursor:pointer}
+.nav .active{color:#f5b942;opacity:1}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app"><!-- HOME PAGE --><div id="home" class="page active">
   <div class="header">
     <div class="logo">ELITE DIGITAL</div>
     <div class="lang">Русский</div>
-  </div>  <div class="balance-card">
+  </div>
+  <div class="balance-card">
     <span>Balance</span>
     <div class="balance">$ 10.80</div>
-  </div>  <div class="actions">
-    <div class="action"><div>$</div>Перезарядка</div>
-    <div class="action"><div>↩</div>Вывод</div>
-    <div class="action"><div>📄</div>Приложение</div>
-    <div class="action"><div>🏢</div>Компания</div>
-  </div>  <div class="banner" style="
-  height:220px;
-  background:linear-gradient(135deg,#f5b942,#ff8c00);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:16px;
-">
-  <div style="text-align:center;color:#000;">
-    <h2 style="margin:0;font-size:22px;">ELITE DIGITAL</h2>
-    <p style="margin:6px 0 0;font-size:14px;">Smart Crypto Investment • 300 Days</p>
   </div>
-</div>
-</div><div class="nav">
-  <div class="active">Дом</div>
-  <div>Задача</div>
-  <div>Команда</div>
-  <div>VIP</div>
-  <div>Мне</div>
-</div>
-</body>
+  <div class="actions">
+    <div class="action"><div class="icon">$</div>Перезарядка</div>
+    <div class="action"><div class="icon">↩</div>Вывод</div>
+    <div class="action"><div class="icon">📄</div>Приложение</div>
+    <div class="action"><div class="icon">🏢</div>Компания</div>
+  </div>
+  <div class="banner">
+    <div>
+      <h2>ELITE DIGITAL</h2>
+      <p>Smart Crypto Investment • 300 Days</p>
+    </div>
+  </div>
+</div><!-- TASK PAGE --><div id="task" class="page"><h3>Задачи (в разработке)</h3></div><!-- TEAM PAGE --><div id="team" class="page"><h3>Команда (в разработке)</h3></div><!-- VIP PAGE --><div id="vip" class="page"><h3>VIP / Elite 300 дней</h3></div><!-- PROFILE PAGE --><div id="me" class="page"><h3>Профиль</h3></div></div><!-- NAVIGATION --><div class="nav">
+  <div class="active" onclick="showPage('home',this)">Дом</div>
+  <div onclick="showPage('task',this)">Задача</div>
+  <div onclick="showPage('team',this)">Команда</div>
+  <div onclick="showPage('vip',this)">VIP</div>
+  <div onclick="showPage('me',this)">Мне</div>
+</div><script>
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav div').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+}
+</script></body>
 </html>
