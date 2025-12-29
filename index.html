@@ -5,57 +5,124 @@
 <title>NEXTRICH ELITE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="css/style.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{
+  background:linear-gradient(180deg,#0f4fd8,#4aa3ff);
+  color:#fff;
+  padding-bottom:90px
+}
+.header{
+  background:#0c3fb8;
+  padding:15px;
+  text-align:center;
+  font-weight:700;
+  font-size:20px
+}
+.header span{color:gold}
+.card{
+  background:#1b5fe0;
+  margin:15px;
+  border-radius:16px;
+  padding:20px
+}
+.balance{
+  font-size:34px;
+  font-weight:700;
+  margin:10px 0
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:15px
+}
+.btn{
+  background:#fff;
+  color:#1e6bff;
+  border:none;
+  border-radius:14px;
+  padding:14px;
+  font-weight:700
+}
+.timer{
+  text-align:center;
+  margin:20px 0
+}
+.timer h2{margin-top:6px}
+.nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#fff;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0
+}
+.nav a{
+  color:#888;
+  text-decoration:none;
+  font-size:14px
+}
+.nav a.active{
+  color:#1e6bff;
+  font-weight:700
+}
+</style>
 </head>
 
 <body>
 
-<!-- HEADER -->
-<header class="header">
-  <div class="logo">NEXTRICH <span>ELITE</span></div>
-</header>
+<div class="header">NEXTRICH <span>ELITE</span></div>
 
-<!-- BALANCE CARD -->
-<section class="balance-card">
-  <p class="welcome">Добро пожаловать</p>
-  <h2>Итоговый баланс (USDT)</h2>
-  <div class="balance">0.00</div>
+<div class="card">
+  <p>Добро пожаловать</p>
+  <h3>Итоговый баланс (USDT)</h3>
+  <div class="balance" id="balance">0.00</div>
 
-  <div class="balance-info">
+  <div class="grid">
     <div>
-      <span>Сумма пополнения</span>
-      <strong>0.00</strong>
+      <small>Пополнение</small><br><b>0.00</b>
     </div>
     <div>
-      <span>VIP уровень</span>
-      <strong>ELITE 0</strong>
+      <small>VIP уровень</small><br><b>ELITE 0</b>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ACTION BUTTONS -->
-<section class="actions">
-  <button>Пополнить</button>
-  <button>Вывести</button>
-  <button>Финансы</button>
-  <button>Команда</button>
-</section>
+<div class="card grid">
+  <button class="btn">Пополнить</button>
+  <button class="btn">Вывести</button>
+  <button class="btn">Финансы</button>
+  <button class="btn">Команда</button>
+</div>
 
-<!-- TIMER -->
-<section class="timer">
-  <p>Сброс задач через:</p>
-  <h3 id="countdown">11:28:05</h3>
-</section>
+<div class="timer">
+  <p>Сброс заданий через</p>
+  <h2 id="countdown">11:28:05</h2>
+</div>
 
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
+<div class="nav">
   <a class="active">Дом</a>
-  <a href="tasks.html">Задача</a>
-  <a href="team.html">Команда</a>
-  <a href="vip.html">VIP</a>
-  <a href="profile.html">Мне</a>
-</nav>
+  <a>Задачи</a>
+  <a>Команда</a>
+  <a>VIP</a>
+  <a>Мне</a>
+</div>
 
-<script src="js/app.js"></script>
+<script>
+let t=11*3600+28*60+5;
+setInterval(()=>{
+  let h=Math.floor(t/3600),
+      m=Math.floor((t%3600)/60),
+      s=t%60;
+  document.getElementById("countdown").innerText=
+    String(h).padStart(2,"0")+":"+
+    String(m).padStart(2,"0")+":"+
+    String(s).padStart(2,"0");
+  if(t>0)t--;
+},1000);
+</script>
+
 </body>
 </html>
