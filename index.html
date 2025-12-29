@@ -2,163 +2,60 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>NEXTRICH</title>
+<title>NEXTRICH ELITE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{margin:0;font-family:Arial;background:#0e1630;color:#fff}
-header{background:#1a2b6d;padding:15px;text-align:center;font-size:20px;font-weight:bold}
-.card{background:#1b2550;margin:15px;padding:15px;border-radius:14px}
-button{background:#4caf50;border:none;padding:10px;border-radius:10px;color:#fff;width:100%;margin-top:10px}
-.gray{background:#555}
-input,textarea{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:none}
-nav{position:fixed;bottom:0;left:0;right:0;background:#1a2b6d;display:flex;justify-content:space-around;padding:12px 0}
-nav div{cursor:pointer}
-.hidden{display:none}
-.support{position:fixed;bottom:75px;right:15px;background:#3ddc84;color:#000;padding:12px 18px;border-radius:20px}
-</style>
+
+<link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-<header>🎄 NEXTRICH 💎</header>
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">NEXTRICH <span>ELITE</span></div>
+</header>
 
-<!-- LOGIN -->
-<div id="login" class="card">
-<h3>Вход</h3>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Пароль">
-<button onclick="login()">Войти</button>
-</div>
+<!-- BALANCE CARD -->
+<section class="balance-card">
+  <p class="welcome">Добро пожаловать</p>
+  <h2>Итоговый баланс (USDT)</h2>
+  <div class="balance">0.00</div>
 
-<!-- APP -->
-<div id="app" class="hidden">
+  <div class="balance-info">
+    <div>
+      <span>Сумма пополнения</span>
+      <strong>0.00</strong>
+    </div>
+    <div>
+      <span>VIP уровень</span>
+      <strong>ELITE 0</strong>
+    </div>
+  </div>
+</section>
 
-<!-- HOME -->
-<div id="home" class="card">
-<h3>Привет, <span id="userEmail"></span></h3>
-<p>Баланс: <b id="balance">0</b> USDT</p>
-<button class="gray">Вывод средств</button>
-</div>
+<!-- ACTION BUTTONS -->
+<section class="actions">
+  <button>Пополнить</button>
+  <button>Вывести</button>
+  <button>Финансы</button>
+  <button>Команда</button>
+</section>
 
-<!-- ELITE -->
-<div id="elite" class="hidden">
-<div class="card">ELITE 1 – 10 USDT</div>
-<div class="card">ELITE 2 – 50 USDT</div>
-<div class="card">ELITE 3 – 200 USDT</div>
-<div class="card">ELITE 4 – 400 USDT</div>
-</div>
+<!-- TIMER -->
+<section class="timer">
+  <p>Сброс задач через:</p>
+  <h3 id="countdown">11:28:05</h3>
+</section>
 
-<!-- TASKS -->
-<div id="tasks" class="card hidden">
-<h3>Задания</h3>
-<ul id="taskList"></ul>
-</div>
-
-<!-- PROFILE -->
-<div id="profile" class="card hidden">
-<h3>Профиль</h3>
-<p>Email: <span id="profileEmail"></span></p>
-<button onclick="logout()">Выйти</button>
-</div>
-
-<!-- ADMIN -->
-<div id="admin" class="card hidden">
-<h3>👑 Админ панель</h3>
-
-<h4>Изменить баланс</h4>
-<input id="adminUserEmail" placeholder="Email пользователя">
-<input id="adminBalance" type="number" placeholder="Новый баланс">
-<button onclick="setBalance()">Сохранить</button>
-
-<h4>Добавить задание</h4>
-<textarea id="newTask" placeholder="Текст задания"></textarea>
-<button onclick="addTask()">Добавить задание</button>
-</div>
-
-</div>
-
-<div class="support">💬 Поддержка</div>
-
-<nav id="nav" class="hidden">
-<div onclick="show('home')">Дом</div>
-<div onclick="show('elite')">ELITE</div>
-<div onclick="show('tasks')">Задачи</div>
-<div onclick="show('profile')">Мне</div>
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a class="active">Дом</a>
+  <a href="tasks.html">Задача</a>
+  <a href="team.html">Команда</a>
+  <a href="vip.html">VIP</a>
+  <a href="profile.html">Мне</a>
 </nav>
 
-<script>
-let currentUser=null;
-let users=JSON.parse(localStorage.getItem('users')||'{}');
-let tasks=JSON.parse(localStorage.getItem('tasks')||'[]');
-
-function login(){
-const email=emailInput.value.trim();
-const pass=password.value;
-
-if(!email){alert("Введите email");return;}
-
-currentUser=email;
-if(!users[email]) users[email]={balance:0};
-
-if(email==="admin@nextrich.com" && pass==="admin123"){
-document.getElementById('admin').classList.remove('hidden');
-}
-
-localStorage.setItem('users',JSON.stringify(users));
-loginDiv.classList.add('hidden');
-app.classList.remove('hidden');
-nav.classList.remove('hidden');
-updateUI();
-}
-
-function updateUI(){
-userEmail.innerText=currentUser;
-profileEmail.innerText=currentUser;
-balance.innerText=users[currentUser].balance;
-renderTasks();
-}
-
-function renderTasks(){
-taskList.innerHTML='';
-tasks.forEach(t=>{
-let li=document.createElement('li');
-li.innerText=t;
-taskList.appendChild(li);
-});
-}
-
-function setBalance(){
-const email=adminUserEmail.value;
-const bal=Number(adminBalance.value);
-if(users[email]){
-users[email].balance=bal;
-localStorage.setItem('users',JSON.stringify(users));
-alert("Баланс обновлён");
-updateUI();
-}else alert("Пользователь не найден");
-}
-
-function addTask(){
-if(!newTask.value)return;
-tasks.push(newTask.value);
-localStorage.setItem('tasks',JSON.stringify(tasks));
-newTask.value='';
-renderTasks();
-}
-
-function show(id){
-['home','elite','tasks','profile'].forEach(e=>document.getElementById(e).classList.add('hidden'));
-document.getElementById(id).classList.remove('hidden');
-}
-
-function logout(){location.reload();}
-
-// shortcuts
-const emailInput=document.getElementById('email');
-const password=document.getElementById('password');
-const loginDiv=document.getElementById('login');
-const app=document.getElementById('app');
-</script>
-
+<script src="js/app.js"></script>
 </body>
 </html>
