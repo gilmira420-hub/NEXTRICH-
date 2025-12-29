@@ -1,165 +1,128 @@
-<!DOCTYPE html>
-<html lang="ru">
+<!DOCTYPE html><html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>NEXTRICH ELITE</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Home — Elite Investment</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:linear-gradient(180deg,#0f4fd8,#4aa3ff);color:#fff;padding-bottom:90px}
-.header{background:#0c3fb8;padding:14px;text-align:center;font-size:20px;font-weight:700}
-.header span{color:gold}
-.notice{background:#ffcc00;color:#000;padding:8px;font-size:12px;text-align:center}
-.card{background:#1b5fe0;margin:15px;border-radius:16px;padding:18px}
-.balance{font-size:34px;font-weight:700;margin:10px 0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.btn{background:#fff;color:#1e6bff;border:none;border-radius:14px;padding:14px;font-weight:700}
-.timer{text-align:center;margin:20px 0}
-.timer h2{margin-top:6px}
-.section{display:none}
-.section.active{display:block}
-.vip{background:#134dd6;padding:12px;border-radius:12px;margin-top:10px}
-.nav{position:fixed;bottom:0;width:100%;background:#fff;display:flex;justify-content:space-around;padding:10px 0}
-.nav a{color:#888;text-decoration:none;font-size:14px}
-.nav a.active{color:#1e6bff;font-weight:700}
+body{
+  margin:0;
+  background:#0b0f1f;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#fff;
+}
+.app{
+  max-width:420px;
+  margin:auto;
+  min-height:100vh;
+  background:#0e132a;
+}
+.header{
+  padding:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.logo{
+  font-weight:bold;
+  font-size:18px;
+}
+.lang{
+  background:#1c2347;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:13px;
+}
+.balance-card{
+  margin:16px;
+  background:linear-gradient(135deg,#1b2350,#0f1433);
+  border-radius:16px;
+  padding:20px;
+  text-align:center;
+}
+.balance-card span{
+  opacity:.8;
+}
+.balance{
+  font-size:32px;
+  margin-top:8px;
+  font-weight:bold;
+}
+.actions{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin:16px;
+}
+.action{
+  background:#1a2045;
+  border-radius:14px;
+  padding:14px 8px;
+  text-align:center;
+  font-size:12px;
+}
+.action div{
+  width:44px;
+  height:44px;
+  margin:0 auto 8px;
+  border-radius:50%;
+  background:#f5b942;
+  color:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+}
+.banner{
+  margin:16px;
+  border-radius:16px;
+  overflow:hidden;
+}
+.banner img{
+  width:100%;
+  display:block;
+}
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#0b1028;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
+}
+.nav div{
+  font-size:12px;
+  opacity:.6;
+}
+.nav .active{
+  color:#f5b942;
+  opacity:1;
+}
 </style>
 </head>
-
 <body>
-
-<div class="header">NEXTRICH <span>ELITE</span></div>
-<div class="notice">⚠ DEMO-версия. Без реальных инвестиций и платежей.</div>
-
-<!-- ===== HOME ===== -->
-<div id="home" class="section active">
-  <div class="card">
-    <p>Добро пожаловать</p>
-    <h3>Баланс (USDT)</h3>
-    <div class="balance" id="balance">0.00</div>
-    <div class="grid">
-      <div><small>VIP</small><br><b id="vip">ELITE 0</b></div>
-      <div><small>Доход/день</small><br><b id="income">0.00</b></div>
-    </div>
+<div class="app">
+  <div class="header">
+    <div class="logo">ELITE DIGITAL</div>
+    <div class="lang">Русский</div>
+  </div>  <div class="balance-card">
+    <span>Balance</span>
+    <div class="balance">$ 10.80</div>
+  </div>  <div class="actions">
+    <div class="action"><div>$</div>Перезарядка</div>
+    <div class="action"><div>↩</div>Вывод</div>
+    <div class="action"><div>📄</div>Приложение</div>
+    <div class="action"><div>🏢</div>Компания</div>
+  </div>  <div class="banner">
+    <img src="banner.jpg" alt="banner">
   </div>
-
-  <div class="card grid">
-    <button class="btn" onclick="addBalance()">Симуляция дохода</button>
-    <button class="btn" onclick="resetDemo()">Сброс</button>
-    <button class="btn" onclick="openTab('tasks')">Задания</button>
-    <button class="btn" onclick="openTab('vipTab')">VIP</button>
-  </div>
-
-  <div class="timer">
-    <p>Сброс заданий через</p>
-    <h2 id="countdown">00:00:00</h2>
-  </div>
+</div><div class="nav">
+  <div class="active">Дом</div>
+  <div>Задача</div>
+  <div>Команда</div>
+  <div>VIP</div>
+  <div>Мне</div>
 </div>
-
-<!-- ===== TASKS ===== -->
-<div id="tasks" class="section">
-  <div class="card">
-    <h3>Ежедневные задания</h3>
-    <p>Доступно: <b id="tasksLeft">3</b></p>
-    <button class="btn" onclick="doTask()">Выполнить задание</button>
-  </div>
-</div>
-
-<!-- ===== VIP ===== -->
-<div id="vipTab" class="section">
-  <div class="card">
-    <h3>VIP уровни (DEMO)</h3>
-    <div class="vip">
-      <b>ELITE 1</b><br>Доход: 2 USDT/день<br>
-      <button class="btn" onclick="setVIP(1,2)">Активировать</button>
-    </div>
-    <div class="vip">
-      <b>ELITE 2</b><br>Доход: 6 USDT/день<br>
-      <button class="btn" onclick="setVIP(2,6)">Активировать</button>
-    </div>
-    <div class="vip">
-      <b>ELITE 3</b><br>Доход: 15 USDT/день<br>
-      <button class="btn" onclick="setVIP(3,15)">Активировать</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== TEAM ===== -->
-<div id="team" class="section">
-  <div class="card">
-    <h3>Команда</h3>
-    <p>Реферальный код:</p>
-    <b id="ref">NX-000123</b>
-    <p style="margin-top:10px">Приглашено: <b>0</b></p>
-  </div>
-</div>
-
-<!-- ===== PROFILE ===== -->
-<div id="profile" class="section">
-  <div class="card">
-    <h3>Профиль</h3>
-    <p>Email: demo@nextrich.com</p>
-    <p>Статус: DEMO</p>
-  </div>
-</div>
-
-<!-- NAV -->
-<div class="nav">
-  <a class="active" onclick="openTab('home',this)">Дом</a>
-  <a onclick="openTab('tasks',this)">Задачи</a>
-  <a onclick="openTab('team',this)">Команда</a>
-  <a onclick="openTab('vipTab',this)">VIP</a>
-  <a onclick="openTab('profile',this)">Мне</a>
-</div>
-
-<script>
-/* ===== STATE ===== */
-let balance = Number(localStorage.getItem("bal")) || 0;
-let vipLevel = localStorage.getItem("vip") || "ELITE 0";
-let income = Number(localStorage.getItem("inc")) || 0;
-let tasks = Number(localStorage.getItem("tasks")) || 3;
-
-/* ===== TIMER 24h ===== */
-let t = localStorage.getItem("timer") ? Number(localStorage.getItem("timer")) : 86400;
-setInterval(()=>{
-  let h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;
-  countdown.innerText=`${String(h).padStart(2,0)}:${String(m).padStart(2,0)}:${String(s).padStart(2,0)}`;
-  t--; if(t<0){t=86400;tasks=3}
-  localStorage.setItem("timer",t);
-  localStorage.setItem("tasks",tasks);
-  update();
-},1000);
-
-/* ===== FUNCTIONS ===== */
-function update(){
-  balanceEl.innerText=balance.toFixed(2);
-  vip.innerText=vipLevel;
-  incomeEl.innerText=income.toFixed(2);
-  tasksLeft.innerText=tasks;
-}
-function addBalance(){balance+=income;save()}
-function doTask(){if(tasks>0){balance+=0.5;tasks--;save()}}
-function setVIP(lvl,inc){vipLevel="ELITE "+lvl;income=inc;save()}
-function save(){
-  localStorage.setItem("bal",balance);
-  localStorage.setItem("vip",vipLevel);
-  localStorage.setItem("inc",income);
-  localStorage.setItem("tasks",tasks);
-  update();
-}
-function resetDemo(){localStorage.clear();location.reload()}
-function openTab(id,el){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
-  if(el) el.classList.add('active');
-}
-
-/* init */
-const balanceEl=document.getElementById("balance");
-const incomeEl=document.getElementById("income");
-update();
-</script>
-
 </body>
 </html>
