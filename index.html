@@ -7,142 +7,158 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{
-  background:linear-gradient(180deg,#0f4fd8,#4aa3ff);
-  color:#fff;
-  padding-bottom:90px
-}
-.header{
-  background:#0c3fb8;
-  padding:15px;
-  text-align:center;
-  font-size:20px;
-  font-weight:700
-}
+body{background:linear-gradient(180deg,#0f4fd8,#4aa3ff);color:#fff;padding-bottom:90px}
+.header{background:#0c3fb8;padding:14px;text-align:center;font-size:20px;font-weight:700}
 .header span{color:gold}
-.card{
-  background:#1b5fe0;
-  margin:15px;
-  border-radius:16px;
-  padding:20px
-}
-.balance{
-  font-size:34px;
-  font-weight:700;
-  margin:10px 0
-}
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:15px
-}
-.btn{
-  background:#fff;
-  color:#1e6bff;
-  border:none;
-  border-radius:14px;
-  padding:14px;
-  font-weight:700
-}
-.timer{
-  text-align:center;
-  margin:20px 0
-}
+.notice{background:#ffcc00;color:#000;padding:8px;font-size:12px;text-align:center}
+.card{background:#1b5fe0;margin:15px;border-radius:16px;padding:18px}
+.balance{font-size:34px;font-weight:700;margin:10px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.btn{background:#fff;color:#1e6bff;border:none;border-radius:14px;padding:14px;font-weight:700}
+.timer{text-align:center;margin:20px 0}
 .timer h2{margin-top:6px}
-.nav{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#fff;
-  display:flex;
-  justify-content:space-around;
-  padding:10px 0
-}
-.nav a{
-  color:#888;
-  text-decoration:none;
-  font-size:14px
-}
-.nav a.active{
-  color:#1e6bff;
-  font-weight:700
-}
+.section{display:none}
+.section.active{display:block}
+.vip{background:#134dd6;padding:12px;border-radius:12px;margin-top:10px}
+.nav{position:fixed;bottom:0;width:100%;background:#fff;display:flex;justify-content:space-around;padding:10px 0}
+.nav a{color:#888;text-decoration:none;font-size:14px}
+.nav a.active{color:#1e6bff;font-weight:700}
 </style>
 </head>
 
 <body>
 
 <div class="header">NEXTRICH <span>ELITE</span></div>
+<div class="notice">⚠ DEMO-версия. Без реальных инвестиций и платежей.</div>
 
-<div class="card">
-  <p>Добро пожаловать</p>
-  <h3>Итоговый баланс (USDT)</h3>
-  <div class="balance" id="balance">0.00</div>
-
-  <div class="grid">
-    <div>
-      <small>Пополнение</small><br><b>0.00</b>
+<!-- ===== HOME ===== -->
+<div id="home" class="section active">
+  <div class="card">
+    <p>Добро пожаловать</p>
+    <h3>Баланс (USDT)</h3>
+    <div class="balance" id="balance">0.00</div>
+    <div class="grid">
+      <div><small>VIP</small><br><b id="vip">ELITE 0</b></div>
+      <div><small>Доход/день</small><br><b id="income">0.00</b></div>
     </div>
-    <div>
-      <small>VIP уровень</small><br><b>ELITE 0</b>
+  </div>
+
+  <div class="card grid">
+    <button class="btn" onclick="addBalance()">Симуляция дохода</button>
+    <button class="btn" onclick="resetDemo()">Сброс</button>
+    <button class="btn" onclick="openTab('tasks')">Задания</button>
+    <button class="btn" onclick="openTab('vipTab')">VIP</button>
+  </div>
+
+  <div class="timer">
+    <p>Сброс заданий через</p>
+    <h2 id="countdown">00:00:00</h2>
+  </div>
+</div>
+
+<!-- ===== TASKS ===== -->
+<div id="tasks" class="section">
+  <div class="card">
+    <h3>Ежедневные задания</h3>
+    <p>Доступно: <b id="tasksLeft">3</b></p>
+    <button class="btn" onclick="doTask()">Выполнить задание</button>
+  </div>
+</div>
+
+<!-- ===== VIP ===== -->
+<div id="vipTab" class="section">
+  <div class="card">
+    <h3>VIP уровни (DEMO)</h3>
+    <div class="vip">
+      <b>ELITE 1</b><br>Доход: 2 USDT/день<br>
+      <button class="btn" onclick="setVIP(1,2)">Активировать</button>
+    </div>
+    <div class="vip">
+      <b>ELITE 2</b><br>Доход: 6 USDT/день<br>
+      <button class="btn" onclick="setVIP(2,6)">Активировать</button>
+    </div>
+    <div class="vip">
+      <b>ELITE 3</b><br>Доход: 15 USDT/день<br>
+      <button class="btn" onclick="setVIP(3,15)">Активировать</button>
     </div>
   </div>
 </div>
 
-<div class="card grid">
-  <button class="btn">Пополнить</button>
-  <button class="btn">Вывести</button>
-  <button class="btn">Финансы</button>
-  <button class="btn">Команда</button>
+<!-- ===== TEAM ===== -->
+<div id="team" class="section">
+  <div class="card">
+    <h3>Команда</h3>
+    <p>Реферальный код:</p>
+    <b id="ref">NX-000123</b>
+    <p style="margin-top:10px">Приглашено: <b>0</b></p>
+  </div>
 </div>
 
-<div class="timer">
-  <p>Сброс заданий через</p>
-  <h2 id="countdown">00:00:00</h2>
+<!-- ===== PROFILE ===== -->
+<div id="profile" class="section">
+  <div class="card">
+    <h3>Профиль</h3>
+    <p>Email: demo@nextrich.com</p>
+    <p>Статус: DEMO</p>
+  </div>
 </div>
 
+<!-- NAV -->
 <div class="nav">
-  <a class="active">Дом</a>
-  <a>Задачи</a>
-  <a>Команда</a>
-  <a>VIP</a>
-  <a>Мне</a>
+  <a class="active" onclick="openTab('home',this)">Дом</a>
+  <a onclick="openTab('tasks',this)">Задачи</a>
+  <a onclick="openTab('team',this)">Команда</a>
+  <a onclick="openTab('vipTab',this)">VIP</a>
+  <a onclick="openTab('profile',this)">Мне</a>
 </div>
 
 <script>
-/* === РЕАЛЬНЫЙ РАБОЧИЙ ТАЙМЕР (24 ЧАСА) === */
-const RESET_SECONDS = 24 * 60 * 60;
+/* ===== STATE ===== */
+let balance = Number(localStorage.getItem("bal")) || 0;
+let vipLevel = localStorage.getItem("vip") || "ELITE 0";
+let income = Number(localStorage.getItem("inc")) || 0;
+let tasks = Number(localStorage.getItem("tasks")) || 3;
 
-// если таймера нет — создаём
-let timeLeft = localStorage.getItem("nextrich_timer");
-if (!timeLeft) {
-  timeLeft = RESET_SECONDS;
-} else {
-  timeLeft = parseInt(timeLeft);
+/* ===== TIMER 24h ===== */
+let t = localStorage.getItem("timer") ? Number(localStorage.getItem("timer")) : 86400;
+setInterval(()=>{
+  let h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;
+  countdown.innerText=`${String(h).padStart(2,0)}:${String(m).padStart(2,0)}:${String(s).padStart(2,0)}`;
+  t--; if(t<0){t=86400;tasks=3}
+  localStorage.setItem("timer",t);
+  localStorage.setItem("tasks",tasks);
+  update();
+},1000);
+
+/* ===== FUNCTIONS ===== */
+function update(){
+  balanceEl.innerText=balance.toFixed(2);
+  vip.innerText=vipLevel;
+  incomeEl.innerText=income.toFixed(2);
+  tasksLeft.innerText=tasks;
+}
+function addBalance(){balance+=income;save()}
+function doTask(){if(tasks>0){balance+=0.5;tasks--;save()}}
+function setVIP(lvl,inc){vipLevel="ELITE "+lvl;income=inc;save()}
+function save(){
+  localStorage.setItem("bal",balance);
+  localStorage.setItem("vip",vipLevel);
+  localStorage.setItem("inc",income);
+  localStorage.setItem("tasks",tasks);
+  update();
+}
+function resetDemo(){localStorage.clear();location.reload()}
+function openTab(id,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
+  if(el) el.classList.add('active');
 }
 
-function updateTimer() {
-  let h = Math.floor(timeLeft / 3600);
-  let m = Math.floor((timeLeft % 3600) / 60);
-  let s = timeLeft % 60;
-
-  document.getElementById("countdown").innerText =
-    String(h).padStart(2,"0") + ":" +
-    String(m).padStart(2,"0") + ":" +
-    String(s).padStart(2,"0");
-
-  timeLeft--;
-
-  if (timeLeft < 0) {
-    timeLeft = RESET_SECONDS;
-  }
-
-  localStorage.setItem("nextrich_timer", timeLeft);
-}
-
-updateTimer();
-setInterval(updateTimer, 1000);
+/* init */
+const balanceEl=document.getElementById("balance");
+const incomeEl=document.getElementById("income");
+update();
 </script>
 
 </body>
